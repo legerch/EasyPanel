@@ -1,28 +1,83 @@
-# EasyPanel
+> [!NOTE]
+> **This project is 100 % vibe-coded.** Every line of code, test and documentation was
+> written by an AI coding agent from natural-language instructions. It also serves as a
+> **sandbox project for testing AI agents**, so expect experiments, and review the code
+> before relying on it.
 
 **The simple electrical panel designer.**
 
-EasyPanel is a lightweight, offline visual editor for drawing the physical layout of
+**EasyPanel** is a lightweight, offline visual editor for drawing the physical layout of
 residential electrical distribution boards: DIN rails, modular devices (RCDs, breakers,
 contactors, outlets…), circuit labels and empty spaces. Its primary target is the French
 residential market (NF C 15-100 conventions such as “C20”, “30mA type A”), but nothing in
 the editor is tied to it.
 
+> [!IMPORTANT]
 > EasyPanel is a **visual documentation tool**. It does not check electrical installations
 > and does not certify compliance with NF C 15-100 or any other standard.
 
-## Getting started
+![EasyPanel editor: component library on the left, a two-row panel in the middle, device properties on the right][img-editor-overview]
 
-### 1. Install Node.js (once)
+**Table of contents:**
+- [1. Screenshots](#1-screenshots)
+- [2. Getting started](#2-getting-started)
+  - [2.1. Install Node.js (once)](#21-install-nodejs-once)
+  - [2.2. Install EasyPanel's dependencies (once)](#22-install-easypanels-dependencies-once)
+  - [2.3. Start the app](#23-start-the-app)
+  - [2.4. Troubleshooting](#24-troubleshooting)
+- [3. Features](#3-features)
+- [4. Using EasyPanel](#4-using-easypanel)
+  - [4.1. Where is my data?](#41-where-is-my-data)
+- [5. Project file format](#5-project-file-format)
+  - [5.1. Versioning](#51-versioning)
+- [6. Architecture](#6-architecture)
+  - [6.1. Tech stack](#61-tech-stack)
+  - [6.2. Adding a device type](#62-adding-a-device-type)
+- [7. Development](#7-development)
+  - [7.1. Deploying (no Node.js needed for users)](#71-deploying-no-nodejs-needed-for-users)
+- [8. Known limitations](#8-known-limitations)
+- [9. License](#9-license)
+
+
+# 1. Screenshots
+
+**Realistic device fronts.** The *Modern* style draws coloured handles, rating badges,
+status windows, residual-current type badges and the day/night contactor's OFF/AUTO/ON
+selector. The label strip above the rail fits each circuit name to its device.
+
+![Close-up of a rail: 63A type A RCD, breakers with blue and yellow-green handles, day/night contactor][img-modern-row]
+
+**Every library component, in both styles.** Switch between them under *Panel
+appearance → Device style*.
+
+| Modern | Classic |
+| --- | --- |
+| ![All components in the modern style][img-devices-modern] | ![All components in the classic style][img-devices-classic] |
+
+**Drag and drop with collision detection.** A drop on an occupied slot is refused, and
+the status bar says why. Hold Shift to insert and push the following devices instead.
+
+![Dragging a breaker onto an occupied slot: the ghost turns red and the status bar explains the refusal][img-drag-refused]
+
+**Exports.** PDF (A4 landscape, vector), PNG, SVG, JSON or print, with an optional title
+block. Below is a PNG export of the example project.
+
+![Export dialog with PDF, PNG, SVG, JSON and Print options][img-export-dialog]
+
+![PNG export of the example panel with its title block][img-export-a4]
+
+# 2. Getting started
+
+## 2.1. Install Node.js (once)
 
 Download and install **Node.js 22.12 or newer** (the *LTS* version) from
-<https://nodejs.org/>. Check it in a terminal:
+[nodejs.org][nodejs]. Check it in a terminal:
 
 ```bash
 node -v    # must print v22.12.0 or higher
 ```
 
-### 2. Install EasyPanel's dependencies (once)
+## 2.2. Install EasyPanel's dependencies (once)
 
 Open a terminal **in the EasyPanel folder** (in VS Code: *Terminal → New Terminal*), then:
 
@@ -30,22 +85,22 @@ Open a terminal **in the EasyPanel folder** (in VS Code: *Terminal → New Termi
 npm install
 ```
 
-### 3. Start the app
+## 2.3. Start the app
 
 ```bash
 npm start
 ```
 
 Your browser opens EasyPanel automatically. If it doesn't, open the address printed in
-the terminal (usually <http://localhost:5173>).
+the terminal (usually [http://localhost:5173][dev-server]).
 
 Keep the terminal open while you use the app. To stop it, press **Ctrl+C** in the
 terminal. Next time, only step 3 is needed.
 
 Your projects are saved in the browser, not in the terminal session: stopping or
-restarting the app does not lose them (see [Where is my data?](#where-is-my-data)).
+restarting the app does not lose them (see [Where is my data?][where-is-my-data]).
 
-### Troubleshooting
+## 2.4. Troubleshooting
 
 | Problem | Fix |
 | --- | --- |
@@ -54,7 +109,7 @@ restarting the app does not lose them (see [Where is my data?](#where-is-my-data
 | `Port 5173 is in use` | Another copy is already running. Use it, or stop it with Ctrl+C. Vite otherwise picks the next free port and prints it. |
 | Blank page when opening `index.html` directly | Don't double-click the file: browsers block ES modules on `file://`. Use `npm start`. |
 
-## Features
+# 3. Features
 
 - **DIN rail workspace.** Rows of any length (13, 18, 24, 26, 36… modules), a visible
   module grid, and numbered modules. 1 module = 18 mm.
@@ -96,7 +151,7 @@ restarting the app does not lose them (see [Where is my data?](#where-is-my-data
   without a label.
 - **English and French UI**, picked automatically from the browser language and switchable.
 
-## Using EasyPanel
+# 4. Using EasyPanel
 
 1. **Add devices.** Drag a component from the left library onto a rail. You can also
    click it: it goes to the first free slot of the selected row.
@@ -123,7 +178,7 @@ restarting the app does not lose them (see [Where is my data?](#where-is-my-data
 | Ctrl+S | Save now (saving is automatic anyway) |
 | Esc | Cancel drag / clear selection |
 
-### Where is my data?
+## 4.1. Where is my data?
 
 Projects are stored in the browser's `localStorage` on your computer; nothing is sent
 anywhere. Clearing site data deletes them, so **export important projects as JSON**.
@@ -132,7 +187,7 @@ If the browser refuses to save (storage full or disabled), the status badge turn
 persistent message asks you to export. Before opening or creating another project, EasyPanel
 offers to export the unsaved one.
 
-## Project file format
+# 5. Project file format
 
 Projects are plain JSON (`*.easypanel.json`):
 
@@ -163,13 +218,13 @@ Projects are plain JSON (`*.easypanel.json`):
   - overlapping devices are moved, and unknown devices are skipped;
   - every repair is **reported** to the user, never silent.
 
-### Versioning
+## 5.1. Versioning
 
-EasyPanel uses [semantic versioning](https://semver.org) for two independent numbers:
+EasyPanel uses [semantic versioning][semver] for two independent numbers:
 
 | Number | Where | Meaning |
 | --- | --- | --- |
-| **Application version** | `package.json` → `generator.version` in each file | Releases of the app, listed in [CHANGELOG.md](CHANGELOG.md) |
+| **Application version** | `package.json` → `generator.version` in each file | Releases of the app, listed in [CHANGELOG.md][changelog] |
 | **Project format version** | `FORMAT_VERSION` in `src/model/types.ts` → `version` in each file | Structure of the JSON file |
 
 The format version decides how a file is loaded:
@@ -195,7 +250,7 @@ When changing the format:
   3. add a test that loads a saved sample of the old format;
   4. bump the application's MAJOR version and note it in the CHANGELOG.
 
-## Architecture
+# 6. Architecture
 
 ```
 src/
@@ -238,16 +293,16 @@ Design principles:
 - **Electrical knowledge stays informational.** `insights.ts` only reports facts about the
   drawing. No electrical rule is enforced or implied.
 
-### Tech stack
+## 6.1. Tech stack
 
-- TypeScript + [Vite](https://vitejs.dev/), with no UI framework: the UI is small, and plain
+- TypeScript + [Vite][vite], with no UI framework: the UI is small, and plain
   DOM keeps it fast and dependency-free.
-- Runtime dependencies: [jsPDF](https://github.com/parallax/jsPDF) and
-  [svg2pdf.js](https://github.com/yWorks/svg2pdf.js) for vector PDF. They are loaded on
+- Runtime dependencies: [jsPDF][jspdf] and
+  [svg2pdf.js][svg2pdf] for vector PDF. They are loaded on
   demand, only when exporting a PDF.
-- Tests: [Vitest](https://vitest.dev/).
+- Tests: [Vitest][vitest].
 
-### Adding a device type
+## 6.2. Adding a device type
 
 1. Add the kind to `DeviceKind` in `src/model/types.ts`.
 2. Describe its editable fields in `KIND_SPECS` (`src/model/catalog.ts`). Optionally add
@@ -260,7 +315,7 @@ Design principles:
    dictionary is typed against the English one, and `tests/i18n.test.ts` checks the keys
    built at runtime.
 
-## Development
+# 7. Development
 
 ```bash
 npm run dev         # dev server with hot reload (same as npm start)
@@ -270,7 +325,7 @@ npm run build       # typecheck + production build into dist/
 npm run preview     # serve the production build locally
 ```
 
-### Deploying (no Node.js needed for users)
+## 7.1. Deploying (no Node.js needed for users)
 
 `npm run build` produces a fully static site in `dist/`: HTML, JS and CSS, with no server
 code. Copy that folder to any static host, such as GitHub Pages, a NAS or an intranet
@@ -280,7 +335,7 @@ only need a browser.
 To serve `dist/` from your own machine without the dev tools, use any static file server:
 `npx serve dist` or `python -m http.server -d dist`.
 
-## Known limitations
+# 8. Known limitations
 
 - Single selection only (no multi-select or group move).
 - Only half-module granularity, no arbitrary widths.
@@ -288,6 +343,29 @@ To serve `dist/` from your own machine without the dev tools, use any static fil
   in the PDF (they do in SVG/PNG).
 - Projects live in one browser profile. Use JSON export to move them between computers.
 
-## License
+# 9. License
 
-MIT. See [LICENSE](LICENSE).
+MIT. See [LICENSE][license].
+
+<!-- Links -->
+
+[nodejs]: https://nodejs.org/
+[dev-server]: http://localhost:5173
+[where-is-my-data]: #41-where-is-my-data
+[semver]: https://semver.org
+[changelog]: CHANGELOG.md
+[vite]: https://vitejs.dev/
+[jspdf]: https://github.com/parallax/jsPDF
+[svg2pdf]: https://github.com/yWorks/svg2pdf.js
+[vitest]: https://vitest.dev/
+[license]: LICENSE
+
+<!-- Images -->
+
+[img-editor-overview]: docs/images/editor-overview.png
+[img-modern-row]: docs/images/modern-row.png
+[img-devices-modern]: docs/images/devices-modern.png
+[img-devices-classic]: docs/images/devices-classic.png
+[img-drag-refused]: docs/images/drag-refused.png
+[img-export-dialog]: docs/images/export-dialog.png
+[img-export-a4]: docs/images/export-a4.png
