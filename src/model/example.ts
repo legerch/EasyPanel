@@ -13,7 +13,13 @@ const rcd = (rating: number, diffType: DiffType, label: string): NewDevice => ({
 const cb = (rating: number, label: string): NewDevice => ({
   kind: 'breaker',
   width: 1,
-  props: { rating, curve: 'C', poles: '1P+N', label },
+  props: { rating, curve: 'C', poles: '1P+N', breakingCapacity: '3000', label },
+});
+/** White-bodied breaker with a light-green handle, as found in many current ranges. */
+const cbWhite = (rating: number, label: string): NewDevice => ({
+  kind: 'breaker',
+  width: 1,
+  props: { rating, curve: 'C', poles: '1P+N', breakingCapacity: '4500', color: '#f8f8f6', accentColor: '#c9dd3c', label },
 });
 
 export function createExampleProject(): Project {
@@ -25,16 +31,16 @@ export function createExampleProject(): Project {
   const row1: NewDevice[] = [
     rcd(63, 'A', 'ID 63A type A'),
     cb(32, 'Plaque de cuisson'),
-    cb(20, 'Four'),
+    cb(20, 'Lave-linge'),
     cb(10, 'Éclairage séjour'),
     cb(10, 'Éclairage chambres'),
     cb(16, 'Prises séjour'),
-    cb(16, 'Prises chambres'),
-    cb(10, 'Éclairage extérieur'),
-    cb(16, 'Prises cuisine'),
+    cb(16, 'Radiateurs'),
+    cbWhite(10, 'Éclairage extérieur'),
+    cbWhite(16, 'Prises cuisine'),
     cb(20, 'Lave-vaisselle'),
-    cb(2, 'VMC'),
-    { kind: 'fuse', width: 1, props: { rating: 20, poles: '1P+N', label: 'Chauffe-eau' } },
+    cbWhite(2, 'Commande chauffe-eau'),
+    { kind: 'contactor', width: 1, props: { rating: 20, poles: '2P', secondary: 'Jour/Nuit', label: 'Chauffe-eau' } },
   ];
   const row2: NewDevice[] = [
     rcd(63, 'AC', 'ID 63A type AC'),

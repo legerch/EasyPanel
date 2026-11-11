@@ -209,7 +209,7 @@ export function renderPanel(project: Project, options: RenderOptions): RenderRes
     for (const d of row.devices) {
       const x = g.x + d.position * MODULE_MM;
       const attrs = editor ? ` data-device-id="${esc(d.id)}" class="device"` : '';
-      out.push(`<g transform="translate(${n(x)} ${n(g.deviceY)})"${attrs}>${drawDevice(d)}</g>`);
+      out.push(`<g transform="translate(${n(x)} ${n(g.deviceY)})"${attrs}>${drawDevice(d, s.deviceStyle)}</g>`);
     }
     if (editor) {
       if (s.rowSpacing >= 6) {

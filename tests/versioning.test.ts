@@ -54,6 +54,21 @@ describe('format versioning', () => {
     }
   });
 
+  it('keeps the classic look for files written before format 1.1.0', () => {
+    expect(loadProject(minimal('1.0.0')).project.settings.deviceStyle).toBe('classic');
+    expect(loadProject(minimal(1)).project.settings.deviceStyle).toBe('classic');
+    expect(createExampleProject().settings.deviceStyle).toBe('modern');
+  });
+
+  it('round-trips format 1.1.0 additions', () => {
+    const p = createExampleProject();
+    p.settings.deviceStyle = 'classic';
+    p.rows[0].devices[0].props.accentColor = '#123456';
+    const { project } = loadProject(JSON.parse(JSON.stringify(p)));
+    expect(project.settings.deviceStyle).toBe('classic');
+    expect(project.rows[0].devices[0].props.accentColor).toBe('#123456');
+  });
+
   it('opens a newer minor version with a warning', () => {
     const r = loadProject(minimal('1.4.2'), { formatVersion: '1.0.0' });
     expect(r.warnings.map((w) => w.key)).toEqual(['load.newerMinor']);

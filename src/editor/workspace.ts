@@ -401,7 +401,7 @@ export class Workspace {
     const marker = target.insert ? `<line class="insert-marker" x1="${n(x - 0.6)}" y1="${n(g.deviceY - 4)}" x2="${n(x - 0.6)}" y2="${n(g.deviceY + DEVICE_H + 4)}"/>` : '';
     const html =
       `<g class="ghost ghost-${state}" font-family="${FONT_FAMILY}" pointer-events="none">` +
-      `<g transform="translate(${n(x)} ${n(g.deviceY)})" opacity="0.8">${drawDevice(d.spec)}</g>` +
+      `<g transform="translate(${n(x)} ${n(g.deviceY)})" opacity="0.8">${drawDevice(d.spec, this.store.project.settings.deviceStyle)}</g>` +
       `<rect class="ghost-outline" x="${n(x - 0.6)}" y="${n(g.deviceY - 0.6)}" width="${n(w + 1.2)}" height="${n(DEVICE_H + 1.2)}" rx="1.2"/>${marker}</g>`;
     this.svg.insertAdjacentHTML('beforeend', html);
 
@@ -419,7 +419,7 @@ export class Workspace {
     if (!d.floating) {
       d.floating = document.createElement('div');
       d.floating.className = 'floating-ghost';
-      d.floating.appendChild(devicePreview(d.spec, PX_PER_MM * this._zoom));
+      d.floating.appendChild(devicePreview(d.spec, this.store.project.settings.deviceStyle, PX_PER_MM * this._zoom));
       document.body.appendChild(d.floating);
     }
     const k = PX_PER_MM * this._zoom;

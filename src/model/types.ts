@@ -13,7 +13,7 @@
  *   - no structural change → bump PATCH.
  * This is independent from the application version (package.json).
  */
-export const FORMAT_VERSION = '1.0.0';
+export const FORMAT_VERSION = '1.1.0';
 export const FORMAT_ID = 'easypanel';
 
 /** Identifies the visual/behavioural family of a device. The catalog maps kinds to defaults and editable fields. */
@@ -62,6 +62,8 @@ export interface DeviceProps {
   label?: string;
   /** Body colour override (CSS colour). */
   color?: string;
+  /** Handle / accent colour override (CSS colour). Format ≥ 1.1.0. */
+  accentColor?: string;
 }
 
 export interface Device {
@@ -84,7 +86,13 @@ export interface Row {
 
 export type LabelOrientation = 'horizontal' | 'vertical';
 
+/** Visual style of device fronts: "modern" (realistic, current hardware) or "classic" (simplified). */
+export type DeviceStyle = 'modern' | 'classic';
+export const DEVICE_STYLES: DeviceStyle[] = ['modern', 'classic'];
+
 export interface PanelSettings {
+  /** Device drawing style. Format ≥ 1.1.0; files without it are shown in "classic" (their original look). */
+  deviceStyle: DeviceStyle;
   /** Panel (enclosure) background colour. */
   background: string;
   /** Vertical gap between two rows, in mm. */

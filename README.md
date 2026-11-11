@@ -65,13 +65,18 @@ restarting the app does not lose them (see [Where is my data?](#where-is-my-data
   is refused. Other devices never move unless you ask:
   - hold **Shift** while dropping to *insert* and push the following devices;
   - use **Pack left** on a row to remove gaps.
+- **Two device styles.**
+  - *Modern* (default) draws realistic fronts like current hardware: coloured handles,
+    rating badges, status windows, OFF/AUTO/ON selectors and coil symbols.
+  - *Classic* draws simplified fronts.
+  - Both are generic, with no brand names or logos.
 - **Component library.** Includes:
   - RCD (type AC/A/F/B), breakers 1P+N and 2P (B/C/D curves), RCBO and main switch;
   - fuse holder, surge protector, contactor (incl. day/night), impulse relay and timer;
   - indicator light, modular outlet, energy meter, blank cover and generic devices.
 - **Free-form properties.** Every property is optional and editable: designation, rating,
   curve, poles, breaking capacity, residual-current type and sensitivity, width, main-text
-  override, secondary text, circuit label and colour. The drawing updates live.
+  override, secondary text, circuit label, body colour and handle/accent colour. The drawing updates live.
 - **Circuit label strip** above each rail. Each label sits in a cell aligned with its
   device. Text is fitted automatically: it shrinks before cutting words and can break
   after hyphens. Labels can be horizontal or vertical.
@@ -138,7 +143,7 @@ Projects are plain JSON (`*.easypanel.json`):
   "generator": { "name": "EasyPanel", "version": "1.0.0" },
   "id": "…",
   "meta": { "name": "…", "description": "…", "author": "…", "createdAt": "ISO", "updatedAt": "ISO" },
-  "settings": { "background": "#d4d6d9", "rowSpacing": 30, "showLabels": true,
+  "settings": { "deviceStyle": "modern", "background": "#d4d6d9", "rowSpacing": 30, "showLabels": true,
                 "labelOrientation": "horizontal", "labelHeight": 22,
                 "fillEmptyWithBlanks": false, "showRowNames": false, "showTitle": true },
   "rows": [
@@ -205,7 +210,10 @@ src/
     insights.ts    Informational statistics & hints (separate from layout rules)
     example.ts     Example project
   render/        Project → SVG (shared by editor and all exports)
-    devices.ts     One drawing per device kind (mm units, presentation attributes only)
+    devices.ts     Dispatches to the selected device style
+    styles/        modern.ts (realistic) and classic.ts (simplified): one front per kind
+    svg.ts         SVG primitives (text, rect, symbols) shared by the styles
+    geometry.ts    Physical dimensions (module = 18 mm, front = 45 mm)
     panel.ts       Panel layout & full SVG document (editor/export modes)
     text.ts        Text measuring, wrapping and fitting
   store/
@@ -244,8 +252,9 @@ Design principles:
 1. Add the kind to `DeviceKind` in `src/model/types.ts`.
 2. Describe its editable fields in `KIND_SPECS` (`src/model/catalog.ts`). Optionally add
    presets to `PRESETS` for the library.
-3. Draw it in `drawDevice()` (`src/render/devices.ts`). Without a dedicated case, the
-   generic drawing is used.
+3. Draw it in each style under `src/render/styles/` (`modern.ts` and `classic.ts`). Without
+   a dedicated case, the generic front is used. Only use plain SVG attributes and
+   Latin-1 text: `tests/render.test.ts` checks every kind in every style.
 4. If it has an automatic marking, extend `mainText()` / `bottomText()` in `deviceText.ts`.
 5. Add `kind.<kind>` (and preset titles) to `src/i18n/en.ts` and `fr.ts`. The French
    dictionary is typed against the English one, and `tests/i18n.test.ts` checks the keys

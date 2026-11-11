@@ -37,6 +37,7 @@ export function uid(): string {
 }
 
 export const DEFAULT_SETTINGS: PanelSettings = {
+  deviceStyle: 'modern',
   background: '#d4d6d9',
   rowSpacing: 30,
   showLabels: true,

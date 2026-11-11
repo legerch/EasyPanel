@@ -45,7 +45,7 @@ export const KIND_SPECS: Record<DeviceKind, KindSpec> = {
 };
 
 /** Fields every kind gets in addition to its specific ones. */
-export const COMMON_FIELDS: PropField[] = ['label', 'text', 'secondary', 'color'];
+export const COMMON_FIELDS: PropField[] = ['label', 'text', 'secondary', 'color', 'accentColor'];
 
 export type CategoryId = 'protection' | 'breakers' | 'control' | 'other';
 export const CATEGORIES: CategoryId[] = ['protection', 'breakers', 'control', 'other'];
@@ -142,7 +142,7 @@ export const PRESETS: Preset[] = [
     category: 'control',
     kind: 'contactor',
     width: 1,
-    props: { rating: 20, poles: '2P', text: 'HC', secondary: 'J/N' },
+    props: { rating: 20, poles: '2P', secondary: 'Jour/Nuit' },
     titleKey: 'preset.contactorDayNight',
   },
   {

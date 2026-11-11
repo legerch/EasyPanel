@@ -22,7 +22,7 @@ import {
   updateDeviceProps,
   compactRow,
 } from '../model/project';
-import type { Device, DeviceKind, DeviceProps, PanelSettings, Project, Row } from '../model/types';
+import { DEVICE_STYLES, type Device, type DeviceKind, type DeviceProps, type PanelSettings, type Project, type Row } from '../model/types';
 import type { Selection } from '../store/store';
 import { append, h } from './dom';
 import { icon, type IconName } from './icons';
@@ -209,6 +209,11 @@ export class Inspector {
         return field(t('field.text'), textInput(p.text ?? '', (v) => edit({ text: v }, f), mainText(device.kind, { ...p, text: undefined }) || t('field.auto')), t('field.text.hint'));
       case 'secondary':
         return field(t('field.secondary'), textInput(p.secondary ?? '', (v) => edit({ secondary: v }, f), bottomText(device.kind, { ...p, secondary: undefined }) || t('field.auto')));
+      case 'accentColor': {
+        const input = h('input', { type: 'color', value: p.accentColor && /^#[0-9a-f]{6}$/i.test(p.accentColor) ? p.accentColor : '#1f6fb6', oninput: (e: Event) => edit({ accentColor: (e.target as HTMLInputElement).value }, f) });
+        const reset = h('button', { type: 'button', class: 'btn btn-small', onclick: () => edit({ accentColor: undefined }, 'accent-reset') }, t('action.reset'));
+        return field(t('field.accentColor'), h('div', { class: 'inline' }, input, reset), t('field.accentColor.hint'));
+      }
       case 'color': {
         const input = h('input', { type: 'color', value: p.color && /^#[0-9a-f]{6}$/i.test(p.color) ? p.color : '#fbfbfb', oninput: (e: Event) => edit({ color: (e.target as HTMLInputElement).value }, f) });
         const reset = h('button', { type: 'button', class: 'btn btn-small', onclick: () => edit({ color: undefined }, 'color-reset') }, t('action.reset'));
@@ -313,6 +318,10 @@ export class Inspector {
       ),
       section(
         t('inspector.panel'),
+        field(
+          t('field.deviceStyle'),
+          selectInput(s.deviceStyle, DEVICE_STYLES.map((v) => ({ value: v, label: t(`deviceStyle.${v}`) })), (v) => v && set('deviceStyle', v, false)),
+        ),
         field(t('field.background'), h('input', { type: 'color', value: /^#[0-9a-f]{6}$/i.test(s.background) ? s.background : '#d4d6d9', oninput: (e: Event) => set('background', (e.target as HTMLInputElement).value) })),
         field(t('field.rowSpacing'), numberInput(s.rowSpacing, (v) => v !== undefined && v >= 0 && v <= 200 && set('rowSpacing', v), { min: 0, max: 200, step: 1 })),
         checkbox(t('field.showLabels'), s.showLabels, (v) => set('showLabels', v, false)),

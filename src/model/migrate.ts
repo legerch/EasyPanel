@@ -9,7 +9,7 @@ import { DEVICE_KINDS, MAX_DEVICE_WIDTH, MAX_ROW_MODULES, SUGGESTIONS } from './
 import { canPlace, findFreeSlot, isOnStep, STEP } from './layout';
 import { currentGenerator, DEFAULT_SETTINGS, uid } from './project';
 import { compareSemVer, formatSemVer, parseSemVer } from './semver';
-import { FORMAT_ID, FORMAT_VERSION, type Device, type DeviceKind, type DeviceProps, type PanelSettings, type Project, type Row } from './types';
+import { DEVICE_STYLES, FORMAT_ID, FORMAT_VERSION, type Device, type DeviceKind, type DeviceProps, type PanelSettings, type Project, type Row } from './types';
 
 export type FormatErrorCode = 'not-json' | 'not-a-project' | 'too-recent';
 
@@ -116,6 +116,7 @@ function normalizeProps(raw: unknown): DeviceProps {
     secondary: str(p.secondary) || undefined,
     label: str(p.label) || undefined,
     color: str(p.color) || undefined,
+    accentColor: str(p.accentColor) || undefined,
   };
   // Drop undefined keys to keep saved files tidy.
   for (const k of Object.keys(props) as Array<keyof DeviceProps>) if (props[k] === undefined) delete props[k];
@@ -130,6 +131,8 @@ function normalize(raw: Json, formatVersion: string): Pick<LoadResult, 'project'
   const now = new Date().toISOString();
   const s = isObject(raw.settings) ? raw.settings : {};
   const settings: PanelSettings = {
+    // Added in format 1.1.0. Older files were drawn in the classic style: keep their look.
+    deviceStyle: oneOf(s.deviceStyle, DEVICE_STYLES) ?? 'classic',
     background: str(s.background, DEFAULT_SETTINGS.background) || DEFAULT_SETTINGS.background,
     rowSpacing: clamp(num(s.rowSpacing) ?? DEFAULT_SETTINGS.rowSpacing, 0, 200),
     showLabels: bool(s.showLabels, DEFAULT_SETTINGS.showLabels),

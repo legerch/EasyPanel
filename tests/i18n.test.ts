@@ -12,6 +12,8 @@ const dynamicKeys = [
   ...['not-json', 'not-a-project', 'too-recent'].map((c) => `error.format.${c}`),
   ...['saved', 'pending', 'error'].flatMap((s) => [`save.${s}`, `save.${s}.title`]),
   ...['pdf', 'png', 'svg', 'json', 'print'].flatMap((f) => [`export.${f}`, `export.${f}.desc`]),
+  'deviceStyle.modern',
+  'deviceStyle.classic',
   'hint.emptyRow',
   'hint.noLabel',
   'load.rowSkipped',

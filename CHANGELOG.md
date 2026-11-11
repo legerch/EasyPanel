@@ -8,6 +8,34 @@ changes are always mentioned here.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-11
+
+### Added
+
+- **Modern device style** (new default for new projects): realistic fronts modelled on
+  current hardware.
+  - Breakers: large coloured handle, black rating badge, contact-status window, fine print
+    and symbol.
+  - RCDs: information panel with test button and type badge.
+  - Contactors: OFF/AUTO/ON selector and coil/contact symbols.
+  - Also redrawn: impulse relay, timer, surge protector, fuse carrier, outlet, meter and
+    indicator.
+- "Device style" panel setting to switch between *Modern* and *Classic*. The library
+  previews follow it.
+- "Handle / accent colour" device property (e.g. a light-green handle on white breakers).
+
+### Changed
+
+- Project format **1.1.0** (minor, backward compatible): adds `settings.deviceStyle` and
+  `props.accentColor`. Files without `deviceStyle` keep their original *Classic* look.
+- Day/night contactor preset shows its rating ("20A") with "Jour/Nuit" as secondary text.
+- Example project updated to show the modern style.
+
+### Fixed
+
+- The residual current symbol "IΔn" is drawn as a vector shape, so it prints correctly in
+  PDF exports.
+
 ## [1.0.0] - 2026-11-11
 
 ### Added

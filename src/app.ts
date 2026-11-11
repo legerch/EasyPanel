@@ -22,7 +22,7 @@ import {
   removeRow,
 } from './model/project';
 import { findFreeSlot } from './model/layout';
-import { FORMAT_VERSION, type Project } from './model/types';
+import { FORMAT_VERSION, type DeviceStyle, type Project } from './model/types';
 import { Workspace, type DropFailure } from './editor/workspace';
 import {
   currentProjectId,
@@ -52,6 +52,7 @@ export class App {
   private workspace!: Workspace;
   private inspector!: Inspector;
   private libraryEl!: HTMLElement;
+  private libraryStyle: DeviceStyle = 'modern';
   private statusEl!: HTMLElement;
   private saveEl!: HTMLElement;
   private zoomEl!: HTMLElement;
@@ -198,7 +199,13 @@ export class App {
       addRow: (after) => this.addRowCommand(after),
       deleteRow: (id) => void this.deleteRow(id),
     });
-    renderLibrary(this.libraryEl, {
+    this.renderLibrary();
+  }
+
+  /** (Re)builds the component palette, with previews in the current device style. */
+  private renderLibrary(): void {
+    this.libraryStyle = this.store.project.settings.deviceStyle;
+    renderLibrary(this.libraryEl, this.libraryStyle, {
       onPointerDown: (preset, e) => this.workspace.beginLibraryDrag(preset, e),
       onActivate: (preset) => this.addPresetAuto(preset),
     });
@@ -219,6 +226,7 @@ export class App {
 
   private onStoreChange(kind: 'project' | 'selection' | 'replace'): void {
     this.workspace.render();
+    if (this.store.project.settings.deviceStyle !== this.libraryStyle) this.renderLibrary();
     // Don't rebuild the form under the user's cursor while they type in it.
     if (kind !== 'project' || !this.inspector.hasFocus()) this.inspector.render(this.store.project, this.store.selection);
     this.updateToolbar();
