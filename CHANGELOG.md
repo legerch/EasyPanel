@@ -8,6 +8,8 @@ changes are always mentioned here.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-11-17
+
 ### Added
 
 - DIN rail workspace: rows of configurable length, module grid, half-module positioning,
@@ -33,3 +35,6 @@ changes are always mentioned here.
 - Example project showing the modern style.
 - Project format **1.0.0** (semantic versioning), stored in the `formatVersion` field,
   separate from the application version in `generator.version`.
+
+[Unreleased]: https://github.com/legerch/EasyPanel/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/legerch/EasyPanel/releases/tag/v1.0.0
