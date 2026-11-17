@@ -1,6 +1,6 @@
 {
   "name": "easypanel",
-  "version": "1.1.0",
+  "version": "1.0.0",
   "description": "EasyPanel – the simple electrical panel designer. Offline visual editor for residential distribution boards.",
   "license": "MIT",
   "private": true,

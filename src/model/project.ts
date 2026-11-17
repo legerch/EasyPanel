@@ -61,7 +61,7 @@ export function createProject(name: string, rows = 2, modules = 13, rowName = (i
   const now = new Date().toISOString();
   return {
     format: FORMAT_ID,
-    version: FORMAT_VERSION,
+    formatVersion: FORMAT_VERSION,
     generator: currentGenerator(),
     id: uid(),
     meta: { name, description: '', author: '', createdAt: now, updatedAt: now },

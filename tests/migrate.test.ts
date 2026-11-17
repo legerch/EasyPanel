@@ -23,13 +23,13 @@ describe('project loading', () => {
   it('rejects non-JSON, foreign JSON and newer versions', () => {
     expect(errorCode(() => parseProjectText('{oops'))).toBe('not-json');
     expect(errorCode(() => loadProject({ hello: 1 }))).toBe('not-a-project');
-    expect(errorCode(() => loadProject({ format: 'easypanel', version: '99.0.0', rows: [] }))).toBe('too-recent');
+    expect(errorCode(() => loadProject({ format: 'easypanel', formatVersion: '99.0.0', rows: [] }))).toBe('too-recent');
   });
 
   it('repairs overlapping devices and reports it', () => {
     const raw = {
       format: 'easypanel',
-      version: 1,
+      formatVersion: '1.0.0',
       rows: [
         {
           id: 'r',
@@ -53,6 +53,7 @@ describe('project loading', () => {
   it('fills defaults and sanitises props', () => {
     const { project } = loadProject({
       format: 'easypanel',
+      formatVersion: '1.0.0',
       rows: [{ devices: [{ kind: 'rcd', position: 0, width: 2, props: { diffType: 'Z', sensitivity: '30', label: 5 } }] }],
     });
     expect(project.settings.showLabels).toBe(true);
@@ -63,6 +64,7 @@ describe('project loading', () => {
   it('regenerates duplicate ids', () => {
     const raw = {
       format: 'easypanel',
+      formatVersion: '1.0.0',
       rows: [
         { id: 'x', modules: 2, devices: [{ id: 'x', kind: 'blank', position: 0, width: 1, props: {} }] },
         { id: 'x', modules: 2, devices: [] },

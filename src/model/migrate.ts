@@ -44,7 +44,7 @@ export type Migration = (project: Json) => Json;
  * Migrations between MAJOR format versions, keyed by the source major.
  * Minor and patch versions never need a migration (by definition they are
  * backward compatible). Example for a future 2.0.0:
- *   1: (p) => ({ ...p, version: '2.0.0', rows: convertRows(p.rows) }),
+ *   1: (p) => ({ ...p, formatVersion: '2.0.0', rows: convertRows(p.rows) }),
  */
 const MIGRATIONS: Record<number, Migration> = {};
 
@@ -76,9 +76,8 @@ export function loadProject(data: unknown, options: LoadOptions = {}): LoadResul
   const migrations = options.migrations ?? MIGRATIONS;
   if (!isObject(data) || data.format !== FORMAT_ID) throw new ProjectFormatError('not-a-project');
 
-  // Files written before semantic versioning have `version: 1` (read as 1.0.0) or no version at all.
-  const fileVersion = data.version === undefined ? { major: 1, minor: 0, patch: 0 } : parseSemVer(data.version);
-  if (!fileVersion) throw new ProjectFormatError('not-a-project', `invalid version ${String(data.version)}`);
+  const fileVersion = parseSemVer(data.formatVersion);
+  if (!fileVersion) throw new ProjectFormatError('not-a-project', `invalid format version ${String(data.formatVersion)}`);
   const fileVersionText = formatSemVer(fileVersion);
   if (fileVersion.major > current.major) throw new ProjectFormatError('too-recent', fileVersionText);
 
@@ -131,8 +130,7 @@ function normalize(raw: Json, formatVersion: string): Pick<LoadResult, 'project'
   const now = new Date().toISOString();
   const s = isObject(raw.settings) ? raw.settings : {};
   const settings: PanelSettings = {
-    // Added in format 1.1.0. Older files were drawn in the classic style: keep their look.
-    deviceStyle: oneOf(s.deviceStyle, DEVICE_STYLES) ?? 'classic',
+    deviceStyle: oneOf(s.deviceStyle, DEVICE_STYLES) ?? DEFAULT_SETTINGS.deviceStyle,
     background: str(s.background, DEFAULT_SETTINGS.background) || DEFAULT_SETTINGS.background,
     rowSpacing: clamp(num(s.rowSpacing) ?? DEFAULT_SETTINGS.rowSpacing, 0, 200),
     showLabels: bool(s.showLabels, DEFAULT_SETTINGS.showLabels),
@@ -196,7 +194,7 @@ function normalize(raw: Json, formatVersion: string): Pick<LoadResult, 'project'
 
   const project: Project = {
     format: FORMAT_ID,
-    version: formatVersion,
+    formatVersion,
     generator: currentGenerator(),
     id: str(raw.id) || uid(),
     meta: {

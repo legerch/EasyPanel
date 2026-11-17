@@ -16,12 +16,8 @@ export interface SemVer {
 
 const SEMVER_RE = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:[-+][0-9A-Za-z.+-]*)?$/;
 
-/**
- * Parses a version. Pre-release/build suffixes are accepted and ignored.
- * A bare integer N (format used before semantic versioning) is read as N.0.0.
- */
+/** Parses a version. Pre-release/build suffixes are accepted and ignored. */
 export function parseSemVer(value: unknown): SemVer | null {
-  if (typeof value === 'number') return Number.isInteger(value) && value >= 0 ? { major: value, minor: 0, patch: 0 } : null;
   if (typeof value !== 'string') return null;
   const m = SEMVER_RE.exec(value.trim());
   return m ? { major: Number(m[1]), minor: Number(m[2]), patch: Number(m[3]) } : null;

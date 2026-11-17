@@ -194,7 +194,7 @@ Projects are plain JSON (`*.easypanel.json`):
 ```jsonc
 {
   "format": "easypanel",
-  "version": "1.0.0",
+  "formatVersion": "1.0.0",
   "generator": { "name": "EasyPanel", "version": "1.0.0" },
   "id": "…",
   "meta": { "name": "…", "description": "…", "author": "…", "createdAt": "ISO", "updatedAt": "ISO" },
@@ -225,7 +225,7 @@ EasyPanel uses [semantic versioning][semver] for two independent numbers:
 | Number | Where | Meaning |
 | --- | --- | --- |
 | **Application version** | `package.json` → `generator.version` in each file | Releases of the app, listed in [CHANGELOG.md][changelog] |
-| **Project format version** | `FORMAT_VERSION` in `src/model/types.ts` → `version` in each file | Structure of the JSON file |
+| **Project format version** | `FORMAT_VERSION` in `src/model/types.ts` → `formatVersion` in each file | Structure of the JSON file |
 
 The format version decides how a file is loaded:
 
@@ -236,7 +236,6 @@ The format version decides how a file is loaded:
 | Older MAJOR | Migrated step by step (1→2→3…). The original is kept as a backup in the browser (`easypanel:backup:<id>:<version>`), and the user is told. |
 | Newer MAJOR | Refused with an "update EasyPanel" message. Nothing is opened or overwritten. |
 
-Files saved before semantic versioning was introduced (`"version": 1`) are read as `1.0.0`.
 The `generator` field is informational only and never affects loading.
 
 When changing the format:
