@@ -12,6 +12,9 @@ contactors, outlets…), circuit labels and empty spaces. Its primary target is 
 residential market (NF C 15-100 conventions such as “C20”, “30mA type A”), but nothing in
 the editor is tied to it.
 
+**Use it online: [legerch.github.io/EasyPanel][online]**, nothing to install. Your projects
+stay in your browser, on your computer (see [Where is my data?][where-is-my-data]).
+
 > [!IMPORTANT]
 > EasyPanel is a **visual documentation tool**. It does not check electrical installations
 > and does not certify compliance with NF C 15-100 or any other standard.
@@ -67,6 +70,10 @@ block. Below is a PNG export of the example project.
 ![PNG export of the example panel with its title block][img-export-a4]
 
 # 2. Getting started
+
+The quickest way is the online version: open [legerch.github.io/EasyPanel][online]. It is
+published at each release and needs no installation. The steps below run EasyPanel from its
+source code on your own computer, which also works without an internet connection.
 
 ## 2.1. Install Node.js (once)
 
@@ -182,6 +189,14 @@ restarting the app does not lose them (see [Where is my data?][where-is-my-data]
 
 Projects are stored in the browser's `localStorage` on your computer; nothing is sent
 anywhere. Clearing site data deletes them, so **export important projects as JSON**.
+
+This is also true for the [online version][online]: GitHub Pages only serves the app's files,
+and the app makes no network request with your data. Your projects never leave your
+computer.
+
+Each site and each browser has its own storage: the online version, a local copy
+(`localhost`) and another browser or computer don't see each other's projects. Use JSON
+export and import to move a project between them.
 
 If the browser refuses to save (storage full or disabled), the status badge turns red and a
 persistent message asks you to export. Before opening or creating another project, EasyPanel
@@ -414,6 +429,7 @@ MIT. See [LICENSE][license].
 
 <!-- Links -->
 
+[online]: https://legerch.github.io/EasyPanel/
 [nodejs]: https://nodejs.org/
 [dev-server]: http://localhost:5173
 [where-is-my-data]: #41-where-is-my-data
