@@ -54,7 +54,9 @@ describe('project loading', () => {
     const { project } = loadProject({
       format: 'easypanel',
       formatVersion: '1.0.0',
-      rows: [{ devices: [{ kind: 'rcd', position: 0, width: 2, props: { diffType: 'Z', sensitivity: '30', label: 5 } }] }],
+      rows: [
+        { devices: [{ kind: 'rcd', position: 0, width: 2, props: { diffType: 'Z', sensitivity: '30', label: 5 } }] },
+      ],
     });
     expect(project.settings.showLabels).toBe(true);
     expect(project.rows[0].modules).toBe(13);

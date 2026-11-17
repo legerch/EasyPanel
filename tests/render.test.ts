@@ -35,7 +35,8 @@ describe('device drawings', () => {
   }
 
   it('draws all library presets', () => {
-    for (const style of DEVICE_STYLES) for (const p of PRESETS) expect(drawDevice(p, style)).not.toMatch(/NaN|undefined/);
+    for (const style of DEVICE_STYLES)
+      for (const p of PRESETS) expect(drawDevice(p, style)).not.toMatch(/NaN|undefined/);
   });
 
   it('escapes user text', () => {
@@ -48,7 +49,7 @@ describe('device drawings', () => {
     // characters. Everything EasyPanel prints by itself must stay within that set.
     const { svg } = renderPanel(createExampleProject(), { mode: 'export' });
     const texts = [...svg.matchAll(/>([^<]+)</g)].map((m) => m[1]).join('');
-    const unsupported = [...texts].filter((c) => c.charCodeAt(0) > 0xff && !'…—’'.includes(c));
+    const unsupported = (texts.match(/[\u{100}-\u{10ffff}]/gu) ?? []).filter((c) => !'…—’'.includes(c));
     expect(unsupported).toEqual([]);
   });
 });

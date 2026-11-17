@@ -156,4 +156,3 @@ export function fileBaseName(project: Project): string {
     .replace(/\s+/g, '-');
   return base || 'easypanel';
 }
-

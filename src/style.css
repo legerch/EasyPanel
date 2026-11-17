@@ -109,11 +109,15 @@ textarea {
   height: 18px;
   background: #fff;
   border-radius: 1px;
-  box-shadow: inset 0 5px 0 -1px #fff, inset 0 9px 0 0 #1f2a37;
+  box-shadow:
+    inset 0 5px 0 -1px #fff,
+    inset 0 9px 0 0 #1f2a37;
 }
 
 .logo i:last-child {
-  box-shadow: inset 0 5px 0 -1px #fff, inset 0 9px 0 0 #f2b705;
+  box-shadow:
+    inset 0 5px 0 -1px #fff,
+    inset 0 9px 0 0 #f2b705;
 }
 
 .toolbar {
@@ -864,7 +868,10 @@ kbd {
   border-bottom-width: 2px;
   border-radius: 4px;
   background: var(--surface-2);
-  font: 11px/1.5 ui-monospace, Consolas, monospace;
+  font:
+    11px/1.5 ui-monospace,
+    Consolas,
+    monospace;
   white-space: nowrap;
 }
 

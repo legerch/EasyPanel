@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { canPlace, checkPlacement, emptyRanges, findFreeSlot, isRowConsistent, minimumModules, planCompact, planInsert } from '../src/model/layout';
+import {
+  canPlace,
+  checkPlacement,
+  emptyRanges,
+  findFreeSlot,
+  isRowConsistent,
+  minimumModules,
+  planCompact,
+  planInsert,
+} from '../src/model/layout';
 import type { Device, Row } from '../src/model/types';
 
 const dev = (id: string, position: number, width = 1): Device => ({ id, kind: 'breaker', position, width, props: {} });

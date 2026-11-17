@@ -111,7 +111,7 @@ describe('project operations', () => {
     addDevice(p, r.id, breaker, 2);
     addDevice(p, r.id, breaker, 5);
     compactRow(p, r.id);
-    expect(r.devices.map((d) => d.position).sort()).toEqual([0, 1]);
+    expect(r.devices.map((d) => d.position).toSorted((a, b) => a - b)).toEqual([0, 1]);
   });
 
   it('builds a consistent example project', () => {

@@ -1,17 +1,22 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
+    // Language version and built-in APIs the code may use. Keep in line with Vite's default
+    // browser target ("baseline-widely-available", see vite.config.ts): Vite transpiles syntax
+    // but does not polyfill APIs, so a newer `lib` would allow code that breaks in those browsers.
+    "target": "ES2023",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "strict": true,
+    "lib": ["ES2023", "DOM"],
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "erasableSyntaxOnly": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
-    "isolatedModules": true,
     "skipLibCheck": true,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "types": ["vite/client"]
   },
   "include": ["src", "tests"]

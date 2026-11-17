@@ -159,19 +159,23 @@ export const en = {
   'error.invalid-modules': 'Invalid rail length: use a whole number between 1 and 72.',
   'error.not-found': 'The item no longer exists.',
   'error.last-row': 'A panel must keep at least one row.',
-  'error.restoreFailed': 'The last project could not be restored. It is kept in browser storage; a new project was started.',
+  'error.restoreFailed':
+    'The last project could not be restored. It is kept in browser storage; a new project was started.',
   'error.saveFailed': 'Automatic save failed ({detail}). Export your project as JSON to avoid losing it.',
   'error.unexpected': 'Unexpected error: {detail}',
   'error.exportFailed': 'Export failed: {detail}',
   'error.format.not-json': 'This file is not valid JSON.',
   'error.format.not-a-project': 'This file is not an EasyPanel project.',
-  'error.format.too-recent': 'This project uses format {version}, which requires a newer version of EasyPanel (this one reads format {supported}). Please update EasyPanel.',
+  'error.format.too-recent':
+    'This project uses format {version}, which requires a newer version of EasyPanel (this one reads format {supported}). Please update EasyPanel.',
 
   'load.repaired': 'Notes about this project:',
-  'load.newerMinor': 'This project uses format {file}, newer than this version of EasyPanel ({app}). It can be opened, but information added by the newer version will be lost when saving.',
+  'load.newerMinor':
+    'This project uses format {file}, newer than this version of EasyPanel ({app}). It can be opened, but information added by the newer version will be lost when saving.',
   'load.migrated': 'Project converted from format {file} to format {app}.',
   'load.backupKept': 'The original version (format {version}) is kept as a backup in this browser.',
-  'load.backupFailed': 'Warning: the original version (format {version}) could not be backed up. Export your project as JSON now.',
+  'load.backupFailed':
+    'Warning: the original version (format {version}) could not be backed up. Export your project as JSON now.',
   'load.rowSkipped': 'Row {row} was invalid and skipped.',
   'load.deviceUnknown': '{row}: an unknown device was skipped.',
   'load.deviceMoved': '{row}: “{device}” overlapped another device and was moved.',
@@ -229,7 +233,8 @@ export const en = {
   'toast.pngReduced': 'Image too large: resolution reduced to {dpi} DPI.',
 
   'help.title': 'Using EasyPanel',
-  'help.intro': 'EasyPanel draws the physical layout of a distribution board: DIN rails, modular devices and circuit labels.',
+  'help.intro':
+    'EasyPanel draws the physical layout of a distribution board: DIN rails, modular devices and circuit labels.',
   'help.step1': 'Drag components from the left library onto a rail (or click them).',
   'help.step2': 'Select a device to edit its rating, curve, label… in the right panel.',
   'help.step3': 'Click a rail to rename it, change its length or add rows.',

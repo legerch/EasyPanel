@@ -7,7 +7,11 @@ type Attrs = Record<string, string | number | boolean | EventListener | null | u
  * Creates an element. Attributes starting with "on" are attached as event
  * listeners; `true` booleans become empty attributes; null/false/undefined are skipped.
  */
-export function h<K extends keyof HTMLElementTagNameMap>(tag: K, attrs: Attrs = {}, ...children: Child[]): HTMLElementTagNameMap[K] {
+export function h<K extends keyof HTMLElementTagNameMap>(
+  tag: K,
+  attrs: Attrs = {},
+  ...children: Child[]
+): HTMLElementTagNameMap[K] {
   const el = document.createElement(tag);
   for (const [key, value] of Object.entries(attrs)) {
     if (value === null || value === undefined || value === false) continue;

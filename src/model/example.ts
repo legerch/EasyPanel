@@ -19,7 +19,15 @@ const cb = (rating: number, label: string): NewDevice => ({
 const cbWhite = (rating: number, label: string): NewDevice => ({
   kind: 'breaker',
   width: 1,
-  props: { rating, curve: 'C', poles: '1P+N', breakingCapacity: '4500', color: '#f8f8f6', accentColor: '#c9dd3c', label },
+  props: {
+    rating,
+    curve: 'C',
+    poles: '1P+N',
+    breakingCapacity: '4500',
+    color: '#f8f8f6',
+    accentColor: '#c9dd3c',
+    label,
+  },
 });
 
 export function createExampleProject(): Project {

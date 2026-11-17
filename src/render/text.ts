@@ -105,13 +105,21 @@ const LINE_HEIGHT = 1.15;
  * preferred; words are only cut when no size allows otherwise. At `min` size
  * the text may still overflow: extra lines are then truncated with an ellipsis.
  */
-export function fitBlock(text: string, width: number, height: number, max: number, min: number, bold = false): FittedBlock {
+export function fitBlock(
+  text: string,
+  width: number,
+  height: number,
+  max: number,
+  min: number,
+  bold = false,
+): FittedBlock {
   const sizes: number[] = [];
   for (let size = max; size >= min - 1e-9; size = Math.round((size - 0.1) * 100) / 100) sizes.push(size);
   for (const breakWords of [false, true]) {
     for (const size of sizes) {
       const { lines, overflow } = wrapLines(text, width, size, bold, breakWords);
-      if ((breakWords || !overflow) && lines.length * size * LINE_HEIGHT <= height) return { size, lines, lineHeight: size * LINE_HEIGHT };
+      if ((breakWords || !overflow) && lines.length * size * LINE_HEIGHT <= height)
+        return { size, lines, lineHeight: size * LINE_HEIGHT };
     }
   }
   const lines = wrap(text, width, min, bold);

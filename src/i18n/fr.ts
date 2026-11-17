@@ -146,7 +146,8 @@ export const fr: Record<keyof typeof en, string> = {
   disclaimer:
     'EasyPanel est un outil de documentation visuelle. Il ne vérifie pas les installations électriques et ne certifie pas la conformité à la NF C 15-100 ni à aucune autre norme.',
 
-  'status.default': 'Glissez des composants sur un rail. Maintenez Maj en déposant pour insérer et pousser les appareils suivants.',
+  'status.default':
+    'Glissez des composants sur un rail. Maintenez Maj en déposant pour insérer et pousser les appareils suivants.',
   'drag.where': '{row} · module {range}',
   'drag.insert': 'insertion : les appareils suivants sont décalés',
   'drag.shiftHint': 'Maj pour insérer',
@@ -161,19 +162,24 @@ export const fr: Record<keyof typeof en, string> = {
   'error.invalid-modules': 'Longueur de rail invalide : nombre entier entre 1 et 72.',
   'error.not-found': 'L’élément n’existe plus.',
   'error.last-row': 'Un tableau doit conserver au moins une rangée.',
-  'error.restoreFailed': 'Le dernier projet n’a pas pu être restauré. Il reste conservé dans le navigateur ; un nouveau projet a été créé.',
-  'error.saveFailed': 'L’enregistrement automatique a échoué ({detail}). Exportez votre projet en JSON pour ne pas le perdre.',
+  'error.restoreFailed':
+    'Le dernier projet n’a pas pu être restauré. Il reste conservé dans le navigateur ; un nouveau projet a été créé.',
+  'error.saveFailed':
+    'L’enregistrement automatique a échoué ({detail}). Exportez votre projet en JSON pour ne pas le perdre.',
   'error.unexpected': 'Erreur inattendue : {detail}',
   'error.exportFailed': 'L’export a échoué : {detail}',
   'error.format.not-json': 'Ce fichier n’est pas un JSON valide.',
   'error.format.not-a-project': 'Ce fichier n’est pas un projet EasyPanel.',
-  'error.format.too-recent': 'Ce projet utilise le format {version}, qui nécessite une version plus récente d’EasyPanel (celle-ci lit le format {supported}). Veuillez mettre à jour EasyPanel.',
+  'error.format.too-recent':
+    'Ce projet utilise le format {version}, qui nécessite une version plus récente d’EasyPanel (celle-ci lit le format {supported}). Veuillez mettre à jour EasyPanel.',
 
   'load.repaired': 'Remarques sur ce projet :',
-  'load.newerMinor': 'Ce projet utilise le format {file}, plus récent que cette version d’EasyPanel ({app}). Il peut être ouvert, mais les informations ajoutées par la version plus récente seront perdues à l’enregistrement.',
+  'load.newerMinor':
+    'Ce projet utilise le format {file}, plus récent que cette version d’EasyPanel ({app}). Il peut être ouvert, mais les informations ajoutées par la version plus récente seront perdues à l’enregistrement.',
   'load.migrated': 'Projet converti du format {file} au format {app}.',
   'load.backupKept': 'La version d’origine (format {version}) est conservée en sauvegarde dans ce navigateur.',
-  'load.backupFailed': 'Attention : la version d’origine (format {version}) n’a pas pu être sauvegardée. Exportez votre projet en JSON maintenant.',
+  'load.backupFailed':
+    'Attention : la version d’origine (format {version}) n’a pas pu être sauvegardée. Exportez votre projet en JSON maintenant.',
   'load.rowSkipped': 'La rangée {row} était invalide et a été ignorée.',
   'load.deviceUnknown': '{row} : un appareil inconnu a été ignoré.',
   'load.deviceMoved': '{row} : « {device} » chevauchait un autre appareil et a été déplacé.',
@@ -187,7 +193,8 @@ export const fr: Record<keyof typeof en, string> = {
   'save.error.title': 'Le stockage du navigateur a échoué. Exportez votre projet en JSON.',
 
   'unsaved.title': 'Projet non enregistré',
-  'unsaved.message': 'Le projet actuel n’a pas pu être enregistré dans le navigateur. L’exporter en fichier avant de continuer ?',
+  'unsaved.message':
+    'Le projet actuel n’a pas pu être enregistré dans le navigateur. L’exporter en fichier avant de continuer ?',
   'unsaved.discard': 'Continuer sans enregistrer',
   'unsaved.export': 'Exporter en JSON et continuer',
 
@@ -231,7 +238,8 @@ export const fr: Record<keyof typeof en, string> = {
   'toast.pngReduced': 'Image trop grande : résolution réduite à {dpi} DPI.',
 
   'help.title': 'Utiliser EasyPanel',
-  'help.intro': 'EasyPanel dessine l’implantation physique d’un tableau de répartition : rails DIN, appareils modulaires et libellés des circuits.',
+  'help.intro':
+    'EasyPanel dessine l’implantation physique d’un tableau de répartition : rails DIN, appareils modulaires et libellés des circuits.',
   'help.step1': 'Glissez des composants depuis la bibliothèque à gauche sur un rail (ou cliquez dessus).',
   'help.step2': 'Sélectionnez un appareil pour modifier calibre, courbe, libellé… dans le panneau de droite.',
   'help.step3': 'Cliquez sur un rail pour le renommer, changer sa longueur ou ajouter des rangées.',
@@ -248,5 +256,6 @@ export const fr: Record<keyof typeof en, string> = {
   'help.save': 'Enregistrer maintenant',
   'help.escape': 'Annuler le glisser / désélectionner',
   'help.version': 'EasyPanel {app} · format de projet {format}',
-  'help.license': 'Logiciel libre et open source (licence MIT). Fonctionne hors ligne ; vos données ne quittent jamais votre ordinateur.',
+  'help.license':
+    'Logiciel libre et open source (licence MIT). Fonctionne hors ligne ; vos données ne quittent jamais votre ordinateur.',
 };

@@ -22,7 +22,15 @@ export function text(x: number, y: number, s: string, size: number, o: TextOpts 
 }
 
 /** Text auto-shrunk to fit `maxWidth`, centred on `cx`. */
-export function fittedText(cx: number, cy: number, s: string, maxWidth: number, max: number, min: number, o: TextOpts = {}): string {
+export function fittedText(
+  cx: number,
+  cy: number,
+  s: string,
+  maxWidth: number,
+  max: number,
+  min: number,
+  o: TextOpts = {},
+): string {
   if (!s) return '';
   return text(cx, cy, s, fitSingleLine(s, maxWidth, max, min, o.bold), o);
 }
@@ -30,7 +38,8 @@ export function fittedText(cx: number, cy: number, s: string, maxWidth: number, 
 export const rect = (x: number, y: number, w: number, h: number, attrs: string) =>
   `<rect x="${n(x)}" y="${n(y)}" width="${n(Math.max(0, w))}" height="${n(Math.max(0, h))}" ${attrs}/>`;
 
-export const circle = (cx: number, cy: number, r: number, attrs: string) => `<circle cx="${n(cx)}" cy="${n(cy)}" r="${n(r)}" ${attrs}/>`;
+export const circle = (cx: number, cy: number, r: number, attrs: string) =>
+  `<circle cx="${n(cx)}" cy="${n(cy)}" r="${n(r)}" ${attrs}/>`;
 
 export const line = (x1: number, y1: number, x2: number, y2: number, attrs: string) =>
   `<line x1="${n(x1)}" y1="${n(y1)}" x2="${n(x2)}" y2="${n(y2)}" ${attrs}/>`;

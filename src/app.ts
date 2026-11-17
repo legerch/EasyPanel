@@ -48,6 +48,7 @@ const AUTOSAVE_DELAY = 400;
 type SaveState = 'saved' | 'pending' | 'error';
 
 export class App {
+  private readonly root: HTMLElement;
   private readonly store: Store;
   private workspace!: Workspace;
   private inspector!: Inspector;
@@ -64,7 +65,8 @@ export class App {
   private saveState: SaveState = 'saved';
   private exportOptions: ExportOptions = { format: 'pdf', dpi: 300, pdfScale: 'fit' };
 
-  constructor(private readonly root: HTMLElement) {
+  constructor(root: HTMLElement) {
+    this.root = root;
     const prefs = loadPrefs();
     if (prefs.lang === 'en' || prefs.lang === 'fr') setLang(prefs.lang);
     this.store = new Store(this.initialProject());
@@ -115,16 +117,36 @@ export class App {
   // ---------------------------------------------------------------------------
 
   private toolButton(name: IconName, label: string, onClick: () => void, showLabel = false): HTMLButtonElement {
-    return h('button', { type: 'button', class: `tool${showLabel ? ' tool-labelled' : ''}`, title: label, 'aria-label': label, onclick: onClick }, icon(name), showLabel ? h('span', {}, label) : null);
+    return h(
+      'button',
+      {
+        type: 'button',
+        class: `tool${showLabel ? ' tool-labelled' : ''}`,
+        title: label,
+        'aria-label': label,
+        onclick: onClick,
+      },
+      icon(name),
+      showLabel ? h('span', {}, label) : null,
+    );
   }
 
   private buildChrome(): void {
     this.root.replaceChildren();
     this.undoBtn = this.toolButton('undo', `${t('action.undo')} (Ctrl+Z)`, () => this.undo());
     this.redoBtn = this.toolButton('redo', `${t('action.redo')} (Ctrl+Y)`, () => this.redo());
-    this.zoomEl = h('button', { type: 'button', class: 'zoom-value', title: t('action.zoomReset'), onclick: () => this.workspace.setZoom(1) }, '100 %');
+    this.zoomEl = h(
+      'button',
+      { type: 'button', class: 'zoom-value', title: t('action.zoomReset'), onclick: () => this.workspace.setZoom(1) },
+      '100 %',
+    );
     this.saveEl = h('span', { class: 'save-state' });
-    this.titleEl = h('button', { type: 'button', class: 'project-title', title: t('inspector.project'), onclick: () => this.store.select({ type: 'none' }) });
+    this.titleEl = h('button', {
+      type: 'button',
+      class: 'project-title',
+      title: t('inspector.project'),
+      onclick: () => this.store.select({ type: 'none' }),
+    });
 
     const lang = h(
       'select',
@@ -139,7 +161,12 @@ export class App {
     const header = h(
       'header',
       { class: 'topbar' },
-      h('div', { class: 'brand' }, h('span', { class: 'logo', 'aria-hidden': 'true' }, h('i'), h('i'), h('i')), h('div', {}, h('strong', {}, 'EasyPanel'), h('small', {}, t('app.tagline')))),
+      h(
+        'div',
+        { class: 'brand' },
+        h('span', { class: 'logo', 'aria-hidden': 'true' }, h('i'), h('i'), h('i')),
+        h('div', {}, h('strong', {}, 'EasyPanel'), h('small', {}, t('app.tagline'))),
+      ),
       h(
         'nav',
         { class: 'toolbar', 'aria-label': t('app.toolbar') },
@@ -156,7 +183,15 @@ export class App {
         this.toolButton('zoomIn', t('action.zoomIn'), () => this.workspace.setZoom(this.workspace.zoom * 1.25)),
         this.toolButton('fit', t('action.fit'), () => this.workspace.fit()),
       ),
-      h('div', { class: 'topbar-right' }, this.titleEl, this.saveEl, lang, this.toolButton('sample', t('action.example'), () => void this.loadExample()), this.toolButton('help', t('action.help'), helpDialog)),
+      h(
+        'div',
+        { class: 'topbar-right' },
+        this.titleEl,
+        this.saveEl,
+        lang,
+        this.toolButton('sample', t('action.example'), () => void this.loadExample()),
+        this.toolButton('help', t('action.help'), helpDialog),
+      ),
     );
 
     this.libraryEl = h('aside', { class: 'library', 'aria-label': t('library.title') });
@@ -166,7 +201,17 @@ export class App {
       'section',
       { class: 'workspace', 'aria-label': t('app.workspace') },
       scroller,
-      h('footer', { class: 'statusbar' }, this.statusEl, h('button', { type: 'button', class: 'btn btn-small', onclick: () => this.addRowCommand() }, icon('plus'), h('span', {}, t('action.addRow')))),
+      h(
+        'footer',
+        { class: 'statusbar' },
+        this.statusEl,
+        h(
+          'button',
+          { type: 'button', class: 'btn btn-small', onclick: () => this.addRowCommand() },
+          icon('plus'),
+          h('span', {}, t('action.addRow')),
+        ),
+      ),
     );
     const inspectorEl = h('aside', { class: 'inspector', 'aria-label': t('inspector.title') });
 
@@ -179,7 +224,8 @@ export class App {
           const d = this.store.update((p) => addDevice(p, rowId, spec, pos, insert));
           this.store.select({ type: 'device', id: d.id });
         }),
-      dropMove: (id, rowId, pos, insert) => this.run(() => this.store.update((p) => moveDevice(p, id, rowId, pos, insert))),
+      dropMove: (id, rowId, pos, insert) =>
+        this.run(() => this.store.update((p) => moveDevice(p, id, rowId, pos, insert))),
       dropFailed: (reason: DropFailure) => toast(t(`error.${reason}`), 'warning'),
       status: (msg) => this.setStatus(msg),
       editDevice: (id) => {
@@ -228,7 +274,8 @@ export class App {
     this.workspace.render();
     if (this.store.project.settings.deviceStyle !== this.libraryStyle) this.renderLibrary();
     // Don't rebuild the form under the user's cursor while they type in it.
-    if (kind !== 'project' || !this.inspector.hasFocus()) this.inspector.render(this.store.project, this.store.selection);
+    if (kind !== 'project' || !this.inspector.hasFocus())
+      this.inspector.render(this.store.project, this.store.selection);
     this.updateToolbar();
     if (kind !== 'selection') this.scheduleSave();
     if (kind === 'replace') requestAnimationFrame(() => this.workspace.fit());
@@ -279,7 +326,8 @@ export class App {
       const wasOk = this.saveState !== 'error';
       this.saveState = 'error';
       this.updateSaveIndicator();
-      if (wasOk) toast(t('error.saveFailed', { detail: e instanceof StorageError ? e.message : String(e) }), 'error', 0);
+      if (wasOk)
+        toast(t('error.saveFailed', { detail: e instanceof StorageError ? e.message : String(e) }), 'error', 0);
       return false;
     }
   }
@@ -394,7 +442,12 @@ export class App {
     const row = this.store.project.rows.find((r) => r.id === id);
     if (!row) return;
     if (row.devices.length > 0) {
-      const ok = await confirmDialog(t('confirm.deleteRow.title'), t('confirm.deleteRow', { name: row.name, n: row.devices.length }), t('action.delete'), true);
+      const ok = await confirmDialog(
+        t('confirm.deleteRow.title'),
+        t('confirm.deleteRow', { name: row.name, n: row.devices.length }),
+        t('action.delete'),
+        true,
+      );
       if (!ok) return;
     }
     this.run(() => this.store.update((p) => removeRow(p, id)));
@@ -403,7 +456,13 @@ export class App {
   private async newProject(): Promise<void> {
     const name = h('input', { type: 'text', value: t('project.new') });
     const rows = h('input', { type: 'number', min: 1, max: 12, value: 2 });
-    const modules = h('select', {}, ...SUGGESTIONS.rowModules.map((m) => h('option', { value: m, selected: m === 13 }, t('library.modules', { n: m }))));
+    const modules = h(
+      'select',
+      {},
+      ...SUGGESTIONS.rowModules.map((m) =>
+        h('option', { value: m, selected: m === 13 }, t('library.modules', { n: m })),
+      ),
+    );
     const body = h(
       'div',
       { class: 'form-grid' },
@@ -431,7 +490,14 @@ export class App {
     if (!choice) return;
     if (choice.type === 'delete') {
       const info = listStoredProjects().find((p) => p.id === choice.id);
-      if (await confirmDialog(t('confirm.deleteProject.title'), t('confirm.deleteProject', { name: info?.name ?? '' }), t('action.delete'), true)) {
+      if (
+        await confirmDialog(
+          t('confirm.deleteProject.title'),
+          t('confirm.deleteProject', { name: info?.name ?? '' }),
+          t('action.delete'),
+          true,
+        )
+      ) {
         deleteFromLibrary(choice.id);
         toast(t('toast.projectDeleted'), 'info');
       }
@@ -473,7 +539,8 @@ export class App {
   }
 
   private formatLoadError(e: unknown): string {
-    if (e instanceof ProjectFormatError) return t(`error.format.${e.code}`, { version: e.message, supported: FORMAT_VERSION });
+    if (e instanceof ProjectFormatError)
+      return t(`error.format.${e.code}`, { version: e.message, supported: FORMAT_VERSION });
     return t('error.unexpected', { detail: e instanceof Error ? e.message : String(e) });
   }
 
@@ -499,7 +566,8 @@ export class App {
         case 'pdf': {
           toast(t('toast.pdfWorking'), 'info', 1500);
           const scale = await exportPdf(project, ctx, opts.pdfScale);
-          if (opts.pdfScale === 'real' && scale < 1) toast(t('toast.pdfScaled', { pct: Math.round(scale * 100) }), 'warning');
+          if (opts.pdfScale === 'real' && scale < 1)
+            toast(t('toast.pdfScaled', { pct: Math.round(scale * 100) }), 'warning');
           break;
         }
         case 'print':
@@ -602,7 +670,9 @@ export class App {
     const { device, rowIndex } = loc;
     if (key === 'ArrowLeft' || key === 'ArrowRight') {
       const step = (half ? 0.5 : 1) * (key === 'ArrowLeft' ? -1 : 1);
-      this.run(() => this.store.update((p) => moveDevice(p, deviceId, loc.row.id, device.position + step), `nudge:${deviceId}`));
+      this.run(() =>
+        this.store.update((p) => moveDevice(p, deviceId, loc.row.id, device.position + step), `nudge:${deviceId}`),
+      );
     } else {
       const target = project.rows[rowIndex + (key === 'ArrowUp' ? -1 : 1)];
       if (!target) return;

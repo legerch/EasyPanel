@@ -9,7 +9,17 @@
 import { MAX_DEVICE_WIDTH, MAX_ROW_MODULES, type Preset } from './catalog';
 import { checkPlacement, findFreeSlot, isOnStep, minimumModules, planCompact, planInsert, STEP } from './layout';
 import { APP_NAME, APP_VERSION } from '../version';
-import { FORMAT_ID, FORMAT_VERSION, type Device, type DeviceKind, type DeviceProps, type Generator, type PanelSettings, type Project, type Row } from './types';
+import {
+  FORMAT_ID,
+  FORMAT_VERSION,
+  type Device,
+  type DeviceKind,
+  type DeviceProps,
+  type Generator,
+  type PanelSettings,
+  type Project,
+  type Row,
+} from './types';
 
 export type EditErrorCode =
   | 'no-space'
@@ -24,8 +34,11 @@ export type EditErrorCode =
 
 /** Expected, user-facing editing failure. `code` is translated by the UI. */
 export class EditError extends Error {
-  constructor(public readonly code: EditErrorCode) {
+  readonly code: EditErrorCode;
+
+  constructor(code: EditErrorCode) {
     super(code);
+    this.code = code;
     this.name = 'EditError';
   }
 }
@@ -181,7 +194,13 @@ export function addDevice(project: Project, rowId: string, spec: NewDevice, posi
   } else {
     assertPlacement(row, pos, spec.width);
   }
-  const device: Device = { id: uid(), kind: spec.kind, position: pos, width: spec.width, props: structuredClone(spec.props) };
+  const device: Device = {
+    id: uid(),
+    kind: spec.kind,
+    position: pos,
+    width: spec.width,
+    props: structuredClone(spec.props),
+  };
   row.devices.push(device);
   return device;
 }
@@ -199,7 +218,13 @@ function applyInsert(row: Row, position: number, width: number, ignoreId?: strin
 }
 
 /** Moves a device to `position` on `targetRowId` (possibly another row). */
-export function moveDevice(project: Project, deviceId: string, targetRowId: string, position: number, insert = false): void {
+export function moveDevice(
+  project: Project,
+  deviceId: string,
+  targetRowId: string,
+  position: number,
+  insert = false,
+): void {
   const { row: source, device } = getDevice(project, deviceId);
   const target = getRow(project, targetRowId);
   // Validate before mutating anything, so a failure leaves the project intact.
@@ -247,7 +272,8 @@ export function updateDeviceProps(project: Project, deviceId: string, patch: Par
   const { device } = getDevice(project, deviceId);
   const props = device.props as Record<string, unknown>;
   for (const [key, value] of Object.entries(patch)) {
-    if (value === undefined || value === '' || (typeof value === 'number' && !Number.isFinite(value))) delete props[key];
+    if (value === undefined || value === '' || (typeof value === 'number' && !Number.isFinite(value)))
+      delete props[key];
     else props[key] = value;
   }
 }

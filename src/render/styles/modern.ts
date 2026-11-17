@@ -48,7 +48,7 @@ const DEFAULT_ACCENT: Partial<Record<DeviceKind, string>> = {
 function rgb(color: string): [number, number, number] | null {
   const m = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(color.trim());
   if (!m) return null;
-  const hex = m[1].length === 3 ? [...m[1]].map((c) => c + c).join('') : m[1];
+  const hex = m[1].length === 3 ? m[1].replace(/./g, '$&$&') : m[1];
   return [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16)) as [number, number, number];
 }
 
@@ -56,7 +56,8 @@ function rgb(color: string): [number, number, number] | null {
 function shade(color: string, factor: number): string {
   const c = rgb(color);
   if (!c) return color;
-  const f = (v: number) => Math.round(Math.min(255, Math.max(0, factor > 1 ? v + (255 - v) * (factor - 1) : v * factor)));
+  const f = (v: number) =>
+    Math.round(Math.min(255, Math.max(0, factor > 1 ? v + (255 - v) * (factor - 1) : v * factor)));
   return `#${c.map((v) => f(v).toString(16).padStart(2, '0')).join('')}`;
 }
 
@@ -94,7 +95,15 @@ function lever(x: number, y: number, lw: number, lh: number, color: string, modu
   const out: string[] = [];
   out.push(rect(x, y, lw, lh, `rx="1" fill="${HOUSING}" stroke="${EDGE}" stroke-width="0.3"`));
   const hh = lh * 0.6;
-  out.push(rect(x + 0.5, y + 0.6, lw - 1, hh, `rx="1" fill="${esc(color)}" stroke="${esc(shade(color, 0.7))}" stroke-width="0.3"`));
+  out.push(
+    rect(
+      x + 0.5,
+      y + 0.6,
+      lw - 1,
+      hh,
+      `rx="1" fill="${esc(color)}" stroke="${esc(shade(color, 0.7))}" stroke-width="0.3"`,
+    ),
+  );
   out.push(rect(x + 1, y + 1, lw - 2, 0.9, `rx="0.4" fill="${esc(shade(color, 1.35))}"`));
   out.push(rect(x + 0.5, y + 0.6 + hh - 1.3, lw - 1, 1.3, `fill="${esc(shade(color, 0.78))}"`));
   // Pivot block under the handle.
@@ -106,22 +115,35 @@ function lever(x: number, y: number, lw: number, lh: number, color: string, modu
   }
   const size = Math.min(1.9, (lw / modules) * 0.14);
   for (let m = 0; m < modules; m++) {
-    out.push(text(x + (lw * (m + 0.5)) / modules, y + 0.6 + hh * 0.55, label, size, { bold: true, fill: onColor(color) }));
+    out.push(
+      text(x + (lw * (m + 0.5)) / modules, y + 0.6 + hh * 0.55, label, size, { bold: true, fill: onColor(color) }),
+    );
   }
   return out.join('');
 }
 
 /** Black badge with white rating text ("C32", "63A"). */
-function badge(x: number, y: number, s: string, maxW: number, size = 2.9, anchor: 'start' | 'middle' = 'start'): string {
+function badge(
+  x: number,
+  y: number,
+  s: string,
+  maxW: number,
+  size = 2.9,
+  anchor: 'start' | 'middle' = 'start',
+): string {
   if (!s) return '';
   const fs = Math.min(size, ((maxW - 1.4) / Math.max(1, measure(s, 1, true))) * 1);
   const bw = Math.min(maxW, measure(s, fs, true) + 1.4);
   const bx = anchor === 'middle' ? x - bw / 2 : x;
-  return rect(bx, y, bw, fs + 1.4, `rx="0.3" fill="${BADGE}"`) + text(bx + bw / 2, y + (fs + 1.4) / 2, s, fs, { bold: true, fill: '#ffffff' });
+  return (
+    rect(bx, y, bw, fs + 1.4, `rx="0.3" fill="${BADGE}"`) +
+    text(bx + bw / 2, y + (fs + 1.4) / 2, s, fs, { bold: true, fill: '#ffffff' })
+  );
 }
 
 /** Mechanical contact-status window. */
-const statusWindow = (x: number, y: number, w = 4.4) => rect(x, y, w, 2, `rx="0.3" fill="${STATUS}" stroke="#7a1d20" stroke-width="0.25"`);
+const statusWindow = (x: number, y: number, w = 4.4) =>
+  rect(x, y, w, 2, `rx="0.3" fill="${STATUS}" stroke="#7a1d20" stroke-width="0.25"`);
 
 const fine = (x: number, y: number, s: string, anchor: 'start' | 'middle' | 'end' = 'start', size = FINE) =>
   s ? text(x, y, s, size, { anchor, fill: PRINT }) : '';
@@ -129,7 +151,9 @@ const fine = (x: number, y: number, s: string, anchor: 'start' | 'middle' | 'end
 function boxed(x: number, y: number, s: string | undefined): string {
   if (!s) return '';
   const bw = measure(s, FINE) + 1;
-  return rect(x, y - 1.1, bw, 2.2, `fill="none" stroke="${PRINT}" stroke-width="0.25"`) + fine(x + bw / 2, y, s, 'middle');
+  return (
+    rect(x, y - 1.1, bw, 2.2, `fill="none" stroke="${PRINT}" stroke-width="0.25"`) + fine(x + bw / 2, y, s, 'middle')
+  );
 }
 
 const thin = `stroke="${PRINT}" stroke-width="0.25" fill="none" stroke-linecap="round"`;
@@ -153,7 +177,9 @@ function contactSymbol(cx: number, top: number, bottom: number, labels?: [string
     line(cx, top, cx, mid - s * 0.35, thin) +
     line(cx, mid - s * 0.35, cx + s * 0.5, mid + s * 0.35, thin) +
     line(cx, mid + s * 0.35, cx, bottom, thin) +
-    (labels ? fine(cx + 0.9, top + 0.4, labels[0], 'start', 1.1) + fine(cx + 0.9, bottom - 0.3, labels[1], 'start', 1.1) : '')
+    (labels
+      ? fine(cx + 0.9, top + 0.4, labels[0], 'start', 1.1) + fine(cx + 0.9, bottom - 0.3, labels[1], 'start', 1.1)
+      : '')
   );
 }
 
@@ -165,7 +191,10 @@ function coilSymbol(cx: number, top: number, bottom: number, impulse = false): s
   return (
     line(cx, top, cx, mid - ch / 2, thin) +
     rect(cx - cw / 2, mid - ch / 2, cw, ch, thin) +
-    (impulse ? line(cx - cw / 2, mid + ch / 2, cx + cw / 2, mid - ch / 2, thin) + line(cx - cw / 2 + 0.6, mid + ch / 2, cx + cw / 2 + 0.6, mid - ch / 2, thin) : line(cx - cw / 2, mid + ch / 2, cx + cw / 2, mid - ch / 2, thin)) +
+    (impulse
+      ? line(cx - cw / 2, mid + ch / 2, cx + cw / 2, mid - ch / 2, thin) +
+        line(cx - cw / 2 + 0.6, mid + ch / 2, cx + cw / 2 + 0.6, mid - ch / 2, thin)
+      : line(cx - cw / 2, mid + ch / 2, cx + cw / 2, mid - ch / 2, thin)) +
     line(cx, mid + ch / 2, cx, bottom, thin) +
     fine(cx - cw / 2 - 0.4, top + 0.5, 'A1', 'end', 1.1) +
     fine(cx - cw / 2 - 0.4, bottom - 0.4, 'A2', 'end', 1.1)
@@ -174,7 +203,10 @@ function coilSymbol(cx: number, top: number, bottom: number, impulse = false): s
 
 /** Small residual-current test button. */
 function testButton(x: number, y: number, w: number, h: number): string {
-  return rect(x, y, w, h, `rx="0.4" fill="#eceeef" stroke="${EDGE}" stroke-width="0.3"`) + text(x + w / 2, y + h / 2, 'T', Math.min(2.6, h * 0.6), { fill: '#6d7177', bold: true });
+  return (
+    rect(x, y, w, h, `rx="0.4" fill="#eceeef" stroke="${EDGE}" stroke-width="0.3"`) +
+    text(x + w / 2, y + h / 2, 'T', Math.min(2.6, h * 0.6), { fill: '#6d7177', bold: true })
+  );
 }
 
 /** Residual-current type badge with its waveform pictogram. */
@@ -238,7 +270,9 @@ function protectionWide(d: DrawableDevice, w: number, accent: string): string {
     p.sensitivity !== undefined ? { sensitivity: p.sensitivity } : '',
     p.poles ?? '',
   ].filter(Boolean);
-  info.forEach((s, i) => out.push(typeof s === 'string' ? fine(2, 15.2 + i * 2.2, s) : deltaLine(2, 15.2 + i * 2.2, s.sensitivity)));
+  info.forEach((s, i) =>
+    out.push(typeof s === 'string' ? fine(2, 15.2 + i * 2.2, s) : deltaLine(2, 15.2 + i * 2.2, s.sensitivity)),
+  );
   // Simplified internal diagram: two poles through a toroid, with the test circuit.
   const gx = 2.2;
   const gw = pw - 4.4;
@@ -311,8 +345,17 @@ function contactor(d: DrawableDevice, w: number, accent: string): string {
   // OFF / AUTO / ON selector (slider in AUTO, its usual position).
   const sx = w - 6.2;
   out.push(rect(sx, 11.6, 4.4, 13.2, `rx="0.8" fill="#e1e2e4" stroke="${EDGE}" stroke-width="0.3"`));
-  out.push(rect(sx + 0.5, 16.4, 3.4, 3.6, `rx="0.5" fill="${esc(accent === BLUE ? '#9ca1a7' : accent)}" stroke="${EDGE}" stroke-width="0.25"`));
-  for (const y of [17.4, 18.2, 19]) out.push(line(sx + 1, y, sx + 3.4, y, `stroke="${shade('#9ca1a7', 0.75)}" stroke-width="0.2"`));
+  out.push(
+    rect(
+      sx + 0.5,
+      16.4,
+      3.4,
+      3.6,
+      `rx="0.5" fill="${esc(accent === BLUE ? '#9ca1a7' : accent)}" stroke="${EDGE}" stroke-width="0.25"`,
+    ),
+  );
+  for (const y of [17.4, 18.2, 19])
+    out.push(line(sx + 1, y, sx + 3.4, y, `stroke="${shade('#9ca1a7', 0.75)}" stroke-width="0.2"`));
   out.push(fine(sx - 0.6, 13, 'OFF', 'end', 1.3));
   out.push(fine(sx - 0.6, 18.2, 'AUTO', 'end', 1.3));
   out.push(fine(sx - 0.6, 23.4, 'ON', 'end', 1.3));
@@ -333,7 +376,15 @@ function impulseRelay(d: DrawableDevice, w: number, accent: string): string {
   const out: string[] = [controlHeader(d, w)];
   const bw = Math.min(10, w - 4);
   out.push(rect((w - bw) / 2, 11.6, bw, bw, `rx="1.6" fill="#e1e2e4" stroke="${EDGE}" stroke-width="0.35"`));
-  out.push(rect((w - bw) / 2 + 1, 12.6, bw - 2, bw - 2, `rx="1.2" fill="${esc(accent === BLUE ? '#f2f2f0' : accent)}" stroke="${EDGE}" stroke-width="0.25"`));
+  out.push(
+    rect(
+      (w - bw) / 2 + 1,
+      12.6,
+      bw - 2,
+      bw - 2,
+      `rx="1.2" fill="${esc(accent === BLUE ? '#f2f2f0' : accent)}" stroke="${EDGE}" stroke-width="0.25"`,
+    ),
+  );
   out.push(fine(w / 2, 11.6 + bw / 2, 'I / O', 'middle', 1.5));
   out.push(line(1, 27.2, w - 1, 27.2, `stroke="#d4d6d9" stroke-width="0.3"`));
   const cx = Math.min(5.2, w * 0.3);
@@ -347,12 +398,30 @@ function timer(d: DrawableDevice, w: number, accent: string): string {
   const r = Math.max(2, Math.min(6, w / 2 - 2.5));
   const cy = 19;
   out.push(circle(w / 2, cy, r + 0.9, `fill="#e1e2e4" stroke="${EDGE}" stroke-width="0.3"`));
-  out.push(circle(w / 2, cy, r, `fill="${esc(accent === BLUE ? '#f2f2f0' : accent)}" stroke="${EDGE}" stroke-width="0.3"`));
+  out.push(
+    circle(w / 2, cy, r, `fill="${esc(accent === BLUE ? '#f2f2f0' : accent)}" stroke="${EDGE}" stroke-width="0.3"`),
+  );
   for (let i = 0; i <= 6; i++) {
     const a = Math.PI * (0.75 + (i / 6) * 1.5);
-    out.push(line(w / 2 + Math.cos(a) * (r + 0.9), cy + Math.sin(a) * (r + 0.9), w / 2 + Math.cos(a) * (r + 2), cy + Math.sin(a) * (r + 2), thin));
+    out.push(
+      line(
+        w / 2 + Math.cos(a) * (r + 0.9),
+        cy + Math.sin(a) * (r + 0.9),
+        w / 2 + Math.cos(a) * (r + 2),
+        cy + Math.sin(a) * (r + 2),
+        thin,
+      ),
+    );
   }
-  out.push(line(w / 2, cy, w / 2 + Math.cos(-1.2) * r * 0.8, cy + Math.sin(-1.2) * r * 0.8, `stroke="#2a2d31" stroke-width="0.8" stroke-linecap="round"`));
+  out.push(
+    line(
+      w / 2,
+      cy,
+      w / 2 + Math.cos(-1.2) * r * 0.8,
+      cy + Math.sin(-1.2) * r * 0.8,
+      `stroke="#2a2d31" stroke-width="0.8" stroke-linecap="round"`,
+    ),
+  );
   out.push(fine(w / 2, cy + r + 3.4, 'min', 'middle', 1.3));
   out.push(line(1, 30, w - 1, 30, `stroke="#d4d6d9" stroke-width="0.3"`));
   out.push(coilSymbol(Math.min(5.2, w * 0.3), 31.5, 43));
@@ -427,7 +496,8 @@ function indicator(d: DrawableDevice, w: number, accent: string): string {
 function blank(d: DrawableDevice, w: number): string {
   const out: string[] = [];
   // Grip ridges.
-  for (const y of [H / 2 - 1.6, H / 2, H / 2 + 1.6]) out.push(line(w * 0.3, y, w * 0.7, y, `stroke="#c5c8cc" stroke-width="0.45" stroke-linecap="round"`));
+  for (const y of [H / 2 - 1.6, H / 2, H / 2 + 1.6])
+    out.push(line(w * 0.3, y, w * 0.7, y, `stroke="#c5c8cc" stroke-width="0.45" stroke-linecap="round"`));
   const main = mainText(d.kind, d.props);
   if (main) out.push(fittedText(w / 2, 8, main, w - 1.6, 3, 1, { bold: true }));
   return out.join('');

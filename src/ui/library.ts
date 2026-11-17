@@ -27,7 +27,11 @@ export function presetTitle(preset: Preset): string {
 }
 
 /** Small SVG preview of a device, at the same scale for every preset so widths compare visually. */
-export function devicePreview(preset: Pick<Preset, 'kind' | 'width' | 'props'>, style: DeviceStyle, pxPerMm = 1.05): Element {
+export function devicePreview(
+  preset: Pick<Preset, 'kind' | 'width' | 'props'>,
+  style: DeviceStyle,
+  pxPerMm = 1.05,
+): Element {
   const w = preset.width * MODULE_MM;
   return fromHtml(
     `<svg class="preview" xmlns="http://www.w3.org/2000/svg" viewBox="-0.5 -0.5 ${w + 1} ${DEVICE_H + 1}" width="${(w + 1) * pxPerMm}" height="${(DEVICE_H + 1) * pxPerMm}" aria-hidden="true"><g font-family="${FONT_FAMILY}">${drawDevice({ ...preset, props: { ...preset.props, label: undefined } }, style)}</g></svg>`,
@@ -37,7 +41,12 @@ export function devicePreview(preset: Pick<Preset, 'kind' | 'width' | 'props'>, 
 /** Builds the palette; previews are drawn in the project's device style. */
 export function renderLibrary(container: HTMLElement, style: DeviceStyle, cb: LibraryCallbacks): void {
   container.replaceChildren();
-  const search = h('input', { type: 'search', class: 'library-search', placeholder: t('library.search'), 'aria-label': t('library.search') });
+  const search = h('input', {
+    type: 'search',
+    class: 'library-search',
+    placeholder: t('library.search'),
+    'aria-label': t('library.search'),
+  });
   const list = h('div', { class: 'library-list' });
   container.append(
     h('div', { class: 'panel-title' }, t('library.title')),
@@ -62,7 +71,12 @@ export function renderLibrary(container: HTMLElement, style: DeviceStyle, cb: Li
           'data-preset': preset.id,
         },
         h('div', { class: 'library-preview' }, devicePreview(preset, style)),
-        h('div', { class: 'library-text' }, h('span', { class: 'library-name' }, title), h('span', { class: 'library-width' }, t('library.modules', { n: preset.width }))),
+        h(
+          'div',
+          { class: 'library-text' },
+          h('span', { class: 'library-name' }, title),
+          h('span', { class: 'library-width' }, t('library.modules', { n: preset.width })),
+        ),
       );
       el.addEventListener('pointerdown', (e) => {
         if (e.button === 0) cb.onPointerDown(preset, e);

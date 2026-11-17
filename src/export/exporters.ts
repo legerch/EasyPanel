@@ -32,7 +32,10 @@ export function exportSvgString(project: Project, ctx: ExportContext): { svg: st
 }
 
 export function exportJson(project: Project): void {
-  downloadBlob(new Blob([serializeProject(project)], { type: 'application/json' }), `${fileBaseName(project)}.easypanel.json`);
+  downloadBlob(
+    new Blob([serializeProject(project)], { type: 'application/json' }),
+    `${fileBaseName(project)}.easypanel.json`,
+  );
 }
 
 export function exportSvg(project: Project, ctx: ExportContext): void {
@@ -46,7 +49,11 @@ const MAX_CANVAS_SIDE = 16000;
 const MAX_CANVAS_AREA = 120_000_000;
 
 /** Rasterises the export SVG. Returns the effective DPI (reduced if the canvas would be too large). */
-export async function renderPng(project: Project, ctx: ExportContext, dpi: number): Promise<{ blob: Blob; dpi: number }> {
+export async function renderPng(
+  project: Project,
+  ctx: ExportContext,
+  dpi: number,
+): Promise<{ blob: Blob; dpi: number }> {
   const { svg, width, height } = exportSvgString(project, ctx);
   let pxPerMm = dpi / 25.4;
   const limit = Math.min(MAX_CANVAS_SIDE / Math.max(width, height), Math.sqrt(MAX_CANVAS_AREA / (width * height)));

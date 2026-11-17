@@ -28,11 +28,25 @@ export function modal<T>(title: string, body: Node, actions: ModalAction<T>[], c
       'header',
       {},
       h('h2', {}, title),
-      h('button', { type: 'button', class: 'icon-btn', 'aria-label': t('action.close'), onclick: () => close(null) }, icon('close')),
+      h(
+        'button',
+        { type: 'button', class: 'icon-btn', 'aria-label': t('action.close'), onclick: () => close(null) },
+        icon('close'),
+      ),
     );
     const footer = h('footer', {});
     for (const a of actions) {
-      footer.appendChild(h('button', { type: 'button', class: `btn ${a.kind === 'primary' ? 'btn-primary' : a.kind === 'danger' ? 'btn-danger' : ''}`, onclick: () => close(a.value) }, a.label));
+      footer.appendChild(
+        h(
+          'button',
+          {
+            type: 'button',
+            class: `btn ${a.kind === 'primary' ? 'btn-primary' : a.kind === 'danger' ? 'btn-danger' : ''}`,
+            onclick: () => close(a.value),
+          },
+          a.label,
+        ),
+      );
     }
     dialog.append(header, h('div', { class: 'modal-body' }, body), footer);
     dialog.addEventListener('click', (e) => {
@@ -78,15 +92,31 @@ export function openProjectDialog(currentId: string): Promise<OpenChoice | null>
             'button',
             { type: 'button', class: 'project-open', onclick: () => pick({ type: 'open', id: p.id }) },
             h('strong', {}, p.name || t('project.untitled')),
-            h('span', { class: 'muted' }, `${formatDate(p.updatedAt, true)}${p.id === currentId ? ` · ${t('open.current')}` : ''}`),
+            h(
+              'span',
+              { class: 'muted' },
+              `${formatDate(p.updatedAt, true)}${p.id === currentId ? ` · ${t('open.current')}` : ''}`,
+            ),
           ),
           p.id === currentId
             ? null
-            : h('button', { type: 'button', class: 'icon-btn', title: t('action.delete'), 'aria-label': t('action.delete'), onclick: () => pick({ type: 'delete', id: p.id }) }, icon('trash')),
+            : h(
+                'button',
+                {
+                  type: 'button',
+                  class: 'icon-btn',
+                  title: t('action.delete'),
+                  'aria-label': t('action.delete'),
+                  onclick: () => pick({ type: 'delete', id: p.id }),
+                },
+                icon('trash'),
+              ),
         ),
       );
     });
-    modal<null>(t('open.title'), body, [{ label: t('action.close'), value: null }], 'modal-open').then(() => resolve(choice));
+    void modal<null>(t('open.title'), body, [{ label: t('action.close'), value: null }], 'modal-open').then(() =>
+      resolve(choice),
+    );
   });
 }
 
@@ -168,7 +198,14 @@ export function helpDialog(): void {
     'div',
     { class: 'help' },
     h('p', {}, t('help.intro')),
-    h('ol', {}, h('li', {}, t('help.step1')), h('li', {}, t('help.step2')), h('li', {}, t('help.step3')), h('li', {}, t('help.step4'))),
+    h(
+      'ol',
+      {},
+      h('li', {}, t('help.step1')),
+      h('li', {}, t('help.step2')),
+      h('li', {}, t('help.step3')),
+      h('li', {}, t('help.step4')),
+    ),
     h('h3', {}, t('help.shortcuts')),
     h('table', {}, ...shortcuts.map(([k, v]) => h('tr', {}, h('td', {}, h('kbd', {}, k)), h('td', {}, v)))),
     h('p', { class: 'disclaimer' }, t('disclaimer')),

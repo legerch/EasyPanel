@@ -8,7 +8,15 @@
  * typing a label produces a single undo step.
  */
 import { formatNumber, t } from '../i18n';
-import { COMMON_FIELDS, DEVICE_KINDS, KIND_SPECS, MAX_DEVICE_WIDTH, MAX_ROW_MODULES, SUGGESTIONS, type PropField } from '../model/catalog';
+import {
+  COMMON_FIELDS,
+  DEVICE_KINDS,
+  KIND_SPECS,
+  MAX_DEVICE_WIDTH,
+  MAX_ROW_MODULES,
+  SUGGESTIONS,
+  type PropField,
+} from '../model/catalog';
 import { bottomText, mainText } from '../model/deviceText';
 import { computeHints, computeStats } from '../model/insights';
 import { usedModules } from '../model/layout';
@@ -22,7 +30,15 @@ import {
   updateDeviceProps,
   compactRow,
 } from '../model/project';
-import { DEVICE_STYLES, type Device, type DeviceKind, type DeviceProps, type PanelSettings, type Project, type Row } from '../model/types';
+import {
+  DEVICE_STYLES,
+  type Device,
+  type DeviceKind,
+  type DeviceProps,
+  type PanelSettings,
+  type Project,
+  type Row,
+} from '../model/types';
 import type { Selection } from '../store/store';
 import { append, h } from './dom';
 import { icon, type IconName } from './icons';
@@ -42,7 +58,13 @@ const nextId = () => `f${++uniq}`;
 
 function field(label: string, control: HTMLElement, hint?: string): HTMLElement {
   const id = control.id || (control.id = nextId());
-  return h('div', { class: 'field' }, h('label', { for: id }, label), control, hint ? h('small', { class: 'muted' }, hint) : null);
+  return h(
+    'div',
+    { class: 'field' },
+    h('label', { for: id }, label),
+    control,
+    hint ? h('small', { class: 'muted' }, hint) : null,
+  );
 }
 
 function datalist(values: Array<string | number>): HTMLDataListElement {
@@ -50,10 +72,19 @@ function datalist(values: Array<string | number>): HTMLDataListElement {
 }
 
 function textInput(value: string, onInput: (v: string) => void, placeholder = ''): HTMLInputElement {
-  return h('input', { type: 'text', value, placeholder, oninput: (e: Event) => onInput((e.target as HTMLInputElement).value) });
+  return h('input', {
+    type: 'text',
+    value,
+    placeholder,
+    oninput: (e: Event) => onInput((e.target as HTMLInputElement).value),
+  });
 }
 
-function numberInput(value: number | undefined, onInput: (v: number | undefined) => void, opts: { min?: number; max?: number; step?: number; list?: HTMLDataListElement } = {}): HTMLInputElement {
+function numberInput(
+  value: number | undefined,
+  onInput: (v: number | undefined) => void,
+  opts: { min?: number; max?: number; step?: number; list?: HTMLDataListElement } = {},
+): HTMLInputElement {
   return h('input', {
     type: 'number',
     value: value ?? '',
@@ -68,7 +99,11 @@ function numberInput(value: number | undefined, onInput: (v: number | undefined)
   });
 }
 
-function selectInput<T extends string>(value: T | undefined, options: ReadonlyArray<{ value: T | ''; label: string }>, onChange: (v: T | undefined) => void): HTMLSelectElement {
+function selectInput<T extends string>(
+  value: T | undefined,
+  options: ReadonlyArray<{ value: T | ''; label: string }>,
+  onChange: (v: T | undefined) => void,
+): HTMLSelectElement {
   return h(
     'select',
     { onchange: (e: Event) => onChange(((e.target as HTMLSelectElement).value || undefined) as T | undefined) },
@@ -77,20 +112,34 @@ function selectInput<T extends string>(value: T | undefined, options: ReadonlyAr
 }
 
 function checkbox(label: string, checked: boolean, onChange: (v: boolean) => void): HTMLElement {
-  return h('label', { class: 'check' }, h('input', { type: 'checkbox', checked, onchange: (e: Event) => onChange((e.target as HTMLInputElement).checked) }), h('span', {}, label));
+  return h(
+    'label',
+    { class: 'check' },
+    h('input', { type: 'checkbox', checked, onchange: (e: Event) => onChange((e.target as HTMLInputElement).checked) }),
+    h('span', {}, label),
+  );
 }
 
 function button(label: string, iconName: IconName, onClick: () => void, cls = ''): HTMLButtonElement {
-  return h('button', { type: 'button', class: `btn btn-small ${cls}`, onclick: onClick }, icon(iconName), h('span', {}, label));
+  return h(
+    'button',
+    { type: 'button', class: `btn btn-small ${cls}`, onclick: onClick },
+    icon(iconName),
+    h('span', {}, label),
+  );
 }
 
-const section = (title: string, ...children: Array<HTMLElement | null>) => h('section', { class: 'inspector-section' }, h('h3', {}, title), ...children);
+const section = (title: string, ...children: Array<HTMLElement | null>) =>
+  h('section', { class: 'inspector-section' }, h('h3', {}, title), ...children);
 
 export class Inspector {
-  constructor(
-    private readonly root: HTMLElement,
-    private readonly actions: InspectorActions,
-  ) {}
+  private readonly root: HTMLElement;
+  private readonly actions: InspectorActions;
+
+  constructor(root: HTMLElement, actions: InspectorActions) {
+    this.root = root;
+    this.actions = actions;
+  }
 
   /** True while the user is typing in the panel: the form must not be rebuilt under their cursor. */
   hasFocus(): boolean {
@@ -122,7 +171,8 @@ export class Inspector {
 
   private renderDevice(device: Device, row: Row): void {
     const id = device.id;
-    const edit = (patch: Partial<DeviceProps>, key: string) => this.actions.edit((p) => updateDeviceProps(p, id, patch), `${id}:${key}`);
+    const edit = (patch: Partial<DeviceProps>, key: string) =>
+      this.actions.edit((p) => updateDeviceProps(p, id, patch), `${id}:${key}`);
     const first = device.position + 1;
     const range = device.width <= 1 ? String(first) : `${first}–${device.position + device.width}`;
 
@@ -180,19 +230,48 @@ export class Inspector {
     );
   }
 
-  private propField(f: PropField, device: Device, edit: (patch: Partial<DeviceProps>, key: string) => void): HTMLElement | null {
+  private propField(
+    f: PropField,
+    device: Device,
+    edit: (patch: Partial<DeviceProps>, key: string) => void,
+  ): HTMLElement | null {
     const p = device.props;
     switch (f) {
       case 'name':
-        return field(t('field.name'), textInput(p.name ?? '', (v) => edit({ name: v }, f), t('field.name.placeholder')));
+        return field(
+          t('field.name'),
+          textInput(p.name ?? '', (v) => edit({ name: v }, f), t('field.name.placeholder')),
+        );
       case 'rating': {
         const list = datalist(SUGGESTIONS.rating);
-        return h('div', {}, field(t('field.rating'), numberInput(p.rating, (v) => edit({ rating: v }, f), { min: 0, list })), list);
+        return h(
+          'div',
+          {},
+          field(
+            t('field.rating'),
+            numberInput(p.rating, (v) => edit({ rating: v }, f), { min: 0, list }),
+          ),
+          list,
+        );
       }
       case 'curve':
-        return field(t('field.curve'), selectInput(p.curve, [{ value: '', label: '—' }, ...SUGGESTIONS.curves.map((c) => ({ value: c, label: c }))], (v) => edit({ curve: v }, f)));
+        return field(
+          t('field.curve'),
+          selectInput(
+            p.curve,
+            [{ value: '', label: '—' }, ...SUGGESTIONS.curves.map((c) => ({ value: c, label: c }))],
+            (v) => edit({ curve: v }, f),
+          ),
+        );
       case 'poles':
-        return field(t('field.poles'), selectInput(p.poles, [{ value: '', label: '—' }, ...SUGGESTIONS.poles.map((c) => ({ value: c, label: c }))], (v) => edit({ poles: v }, f)));
+        return field(
+          t('field.poles'),
+          selectInput(
+            p.poles,
+            [{ value: '', label: '—' }, ...SUGGESTIONS.poles.map((c) => ({ value: c, label: c }))],
+            (v) => edit({ poles: v }, f),
+          ),
+        );
       case 'breakingCapacity': {
         const list = datalist(SUGGESTIONS.breakingCapacity);
         const input = textInput(p.breakingCapacity ?? '', (v) => edit({ breakingCapacity: v }, f), '6kA');
@@ -200,23 +279,72 @@ export class Inspector {
         return h('div', {}, field(t('field.breakingCapacity'), input), list);
       }
       case 'diffType':
-        return field(t('field.diffType'), selectInput(p.diffType, [{ value: '', label: '—' }, ...SUGGESTIONS.diffTypes.map((c) => ({ value: c, label: t('field.diffType.option', { type: c }) }))], (v) => edit({ diffType: v }, f)));
+        return field(
+          t('field.diffType'),
+          selectInput(
+            p.diffType,
+            [
+              { value: '', label: '—' },
+              ...SUGGESTIONS.diffTypes.map((c) => ({ value: c, label: t('field.diffType.option', { type: c }) })),
+            ],
+            (v) => edit({ diffType: v }, f),
+          ),
+        );
       case 'sensitivity': {
         const list = datalist(SUGGESTIONS.sensitivity);
-        return h('div', {}, field(t('field.sensitivity'), numberInput(p.sensitivity, (v) => edit({ sensitivity: v }, f), { min: 0, list })), list);
+        return h(
+          'div',
+          {},
+          field(
+            t('field.sensitivity'),
+            numberInput(p.sensitivity, (v) => edit({ sensitivity: v }, f), { min: 0, list }),
+          ),
+          list,
+        );
       }
       case 'text':
-        return field(t('field.text'), textInput(p.text ?? '', (v) => edit({ text: v }, f), mainText(device.kind, { ...p, text: undefined }) || t('field.auto')), t('field.text.hint'));
+        return field(
+          t('field.text'),
+          textInput(
+            p.text ?? '',
+            (v) => edit({ text: v }, f),
+            mainText(device.kind, { ...p, text: undefined }) || t('field.auto'),
+          ),
+          t('field.text.hint'),
+        );
       case 'secondary':
-        return field(t('field.secondary'), textInput(p.secondary ?? '', (v) => edit({ secondary: v }, f), bottomText(device.kind, { ...p, secondary: undefined }) || t('field.auto')));
+        return field(
+          t('field.secondary'),
+          textInput(
+            p.secondary ?? '',
+            (v) => edit({ secondary: v }, f),
+            bottomText(device.kind, { ...p, secondary: undefined }) || t('field.auto'),
+          ),
+        );
       case 'accentColor': {
-        const input = h('input', { type: 'color', value: p.accentColor && /^#[0-9a-f]{6}$/i.test(p.accentColor) ? p.accentColor : '#1f6fb6', oninput: (e: Event) => edit({ accentColor: (e.target as HTMLInputElement).value }, f) });
-        const reset = h('button', { type: 'button', class: 'btn btn-small', onclick: () => edit({ accentColor: undefined }, 'accent-reset') }, t('action.reset'));
+        const input = h('input', {
+          type: 'color',
+          value: p.accentColor && /^#[0-9a-f]{6}$/i.test(p.accentColor) ? p.accentColor : '#1f6fb6',
+          oninput: (e: Event) => edit({ accentColor: (e.target as HTMLInputElement).value }, f),
+        });
+        const reset = h(
+          'button',
+          { type: 'button', class: 'btn btn-small', onclick: () => edit({ accentColor: undefined }, 'accent-reset') },
+          t('action.reset'),
+        );
         return field(t('field.accentColor'), h('div', { class: 'inline' }, input, reset), t('field.accentColor.hint'));
       }
       case 'color': {
-        const input = h('input', { type: 'color', value: p.color && /^#[0-9a-f]{6}$/i.test(p.color) ? p.color : '#fbfbfb', oninput: (e: Event) => edit({ color: (e.target as HTMLInputElement).value }, f) });
-        const reset = h('button', { type: 'button', class: 'btn btn-small', onclick: () => edit({ color: undefined }, 'color-reset') }, t('action.reset'));
+        const input = h('input', {
+          type: 'color',
+          value: p.color && /^#[0-9a-f]{6}$/i.test(p.color) ? p.color : '#fbfbfb',
+          oninput: (e: Event) => edit({ color: (e.target as HTMLInputElement).value }, f),
+        });
+        const reset = h(
+          'button',
+          { type: 'button', class: 'btn btn-small', onclick: () => edit({ color: undefined }, 'color-reset') },
+          t('action.reset'),
+        );
         return field(t('field.color'), h('div', { class: 'inline' }, input, reset));
       }
       case 'label':
@@ -238,8 +366,20 @@ export class Inspector {
     this.root.append(
       section(
         t('inspector.row'),
-        field(t('field.rowName'), textInput(row.name, (v) => this.actions.edit((p) => renameRow(p, id, v), `${id}:name`))),
-        h('div', {}, field(t('field.modules'), modules, t('inspector.rowUsage', { used: formatNumber(used), free: formatNumber(row.modules - used) })), list),
+        field(
+          t('field.rowName'),
+          textInput(row.name, (v) => this.actions.edit((p) => renameRow(p, id, v), `${id}:name`)),
+        ),
+        h(
+          'div',
+          {},
+          field(
+            t('field.modules'),
+            modules,
+            t('inspector.rowUsage', { used: formatNumber(used), free: formatNumber(row.modules - used) }),
+          ),
+          list,
+        ),
       ),
       h(
         'div',
@@ -257,14 +397,22 @@ export class Inspector {
   // ---------------------------------------------------------------------------
 
   private renderProject(project: Project): void {
-    const meta = (key: 'name' | 'description' | 'author', v: string) => this.actions.edit((p) => (p.meta[key] = v), `meta:${key}`);
+    const meta = (key: 'name' | 'description' | 'author', v: string) =>
+      this.actions.edit((p) => (p.meta[key] = v), `meta:${key}`);
     const set = <K extends keyof PanelSettings>(key: K, v: PanelSettings[K], coalesce = true) =>
       this.actions.edit((p) => (p.settings[key] = v), coalesce ? `settings:${key}` : undefined);
     const s = project.settings;
 
-    const description = h('textarea', { rows: 2, oninput: (e: Event) => meta('description', (e.target as HTMLTextAreaElement).value) });
+    const description = h('textarea', {
+      rows: 2,
+      oninput: (e: Event) => meta('description', (e.target as HTMLTextAreaElement).value),
+    });
     description.value = project.meta.description;
-    const notes = h('textarea', { rows: 3, placeholder: t('field.notes.placeholder'), oninput: (e: Event) => this.actions.edit((p) => (p.notes = (e.target as HTMLTextAreaElement).value), 'notes') });
+    const notes = h('textarea', {
+      rows: 3,
+      placeholder: t('field.notes.placeholder'),
+      oninput: (e: Event) => this.actions.edit((p) => (p.notes = (e.target as HTMLTextAreaElement).value), 'notes'),
+    });
     notes.value = project.notes;
 
     const stats = computeStats(project);
@@ -298,7 +446,13 @@ export class Inspector {
             {
               type: 'button',
               class: 'hint-link',
-              onclick: () => hint.targetId && this.actions.select(project.rows.some((r) => r.id === hint.targetId) ? { type: 'row', id: hint.targetId } : { type: 'device', id: hint.targetId }),
+              onclick: () =>
+                hint.targetId &&
+                this.actions.select(
+                  project.rows.some((r) => r.id === hint.targetId)
+                    ? { type: 'row', id: hint.targetId }
+                    : { type: 'device', id: hint.targetId },
+                ),
             },
             icon('info'),
             h('span', {}, t(hint.key, hint.params)),
@@ -311,33 +465,76 @@ export class Inspector {
     this.root.append(
       section(
         t('inspector.project'),
-        field(t('field.projectName'), textInput(project.meta.name, (v) => meta('name', v))),
+        field(
+          t('field.projectName'),
+          textInput(project.meta.name, (v) => meta('name', v)),
+        ),
         field(t('field.description'), description),
-        field(t('field.author'), textInput(project.meta.author, (v) => meta('author', v))),
+        field(
+          t('field.author'),
+          textInput(project.meta.author, (v) => meta('author', v)),
+        ),
         field(t('field.notes'), notes),
       ),
       section(
         t('inspector.panel'),
         field(
           t('field.deviceStyle'),
-          selectInput(s.deviceStyle, DEVICE_STYLES.map((v) => ({ value: v, label: t(`deviceStyle.${v}`) })), (v) => v && set('deviceStyle', v, false)),
+          selectInput(
+            s.deviceStyle,
+            DEVICE_STYLES.map((v) => ({ value: v, label: t(`deviceStyle.${v}`) })),
+            (v) => v && set('deviceStyle', v, false),
+          ),
         ),
-        field(t('field.background'), h('input', { type: 'color', value: /^#[0-9a-f]{6}$/i.test(s.background) ? s.background : '#d4d6d9', oninput: (e: Event) => set('background', (e.target as HTMLInputElement).value) })),
-        field(t('field.rowSpacing'), numberInput(s.rowSpacing, (v) => v !== undefined && v >= 0 && v <= 200 && set('rowSpacing', v), { min: 0, max: 200, step: 1 })),
+        field(
+          t('field.background'),
+          h('input', {
+            type: 'color',
+            value: /^#[0-9a-f]{6}$/i.test(s.background) ? s.background : '#d4d6d9',
+            oninput: (e: Event) => set('background', (e.target as HTMLInputElement).value),
+          }),
+        ),
+        field(
+          t('field.rowSpacing'),
+          numberInput(s.rowSpacing, (v) => v !== undefined && v >= 0 && v <= 200 && set('rowSpacing', v), {
+            min: 0,
+            max: 200,
+            step: 1,
+          }),
+        ),
         checkbox(t('field.showLabels'), s.showLabels, (v) => set('showLabels', v, false)),
         field(
           t('field.labelOrientation'),
-          selectInput(s.labelOrientation, [
-            { value: 'horizontal', label: t('field.horizontal') },
-            { value: 'vertical', label: t('field.vertical') },
-          ], (v) => v && set('labelOrientation', v, false)),
+          selectInput(
+            s.labelOrientation,
+            [
+              { value: 'horizontal', label: t('field.horizontal') },
+              { value: 'vertical', label: t('field.vertical') },
+            ],
+            (v) => v && set('labelOrientation', v, false),
+          ),
         ),
-        field(t('field.labelHeight'), numberInput(s.labelHeight, (v) => v !== undefined && v >= 8 && v <= 120 && set('labelHeight', v), { min: 8, max: 120, step: 1 })),
+        field(
+          t('field.labelHeight'),
+          numberInput(s.labelHeight, (v) => v !== undefined && v >= 8 && v <= 120 && set('labelHeight', v), {
+            min: 8,
+            max: 120,
+            step: 1,
+          }),
+        ),
         checkbox(t('field.showRowNames'), s.showRowNames, (v) => set('showRowNames', v, false)),
         checkbox(t('field.fillEmpty'), s.fillEmptyWithBlanks, (v) => set('fillEmptyWithBlanks', v, false)),
         checkbox(t('field.showTitle'), s.showTitle, (v) => set('showTitle', v, false)),
       ),
-      section(t('inspector.rows'), rows, h('div', { class: 'inspector-actions' }, button(t('action.addRow'), 'plus', () => this.actions.addRow()))),
+      section(
+        t('inspector.rows'),
+        rows,
+        h(
+          'div',
+          { class: 'inspector-actions' },
+          button(t('action.addRow'), 'plus', () => this.actions.addRow()),
+        ),
+      ),
       section(
         t('inspector.summary'),
         h(

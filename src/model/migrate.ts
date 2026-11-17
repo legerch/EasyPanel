@@ -9,13 +9,26 @@ import { DEVICE_KINDS, MAX_DEVICE_WIDTH, MAX_ROW_MODULES, SUGGESTIONS } from './
 import { canPlace, findFreeSlot, isOnStep, STEP } from './layout';
 import { currentGenerator, DEFAULT_SETTINGS, uid } from './project';
 import { compareSemVer, formatSemVer, parseSemVer } from './semver';
-import { DEVICE_STYLES, FORMAT_ID, FORMAT_VERSION, type Device, type DeviceKind, type DeviceProps, type PanelSettings, type Project, type Row } from './types';
+import {
+  DEVICE_STYLES,
+  FORMAT_ID,
+  FORMAT_VERSION,
+  type Device,
+  type DeviceKind,
+  type DeviceProps,
+  type PanelSettings,
+  type Project,
+  type Row,
+} from './types';
 
 export type FormatErrorCode = 'not-json' | 'not-a-project' | 'too-recent';
 
 export class ProjectFormatError extends Error {
-  constructor(public readonly code: FormatErrorCode, detail?: string) {
+  readonly code: FormatErrorCode;
+
+  constructor(code: FormatErrorCode, detail?: string) {
     super(detail ?? code);
+    this.code = code;
     this.name = 'ProjectFormatError';
   }
 }
@@ -77,7 +90,8 @@ export function loadProject(data: unknown, options: LoadOptions = {}): LoadResul
   if (!isObject(data) || data.format !== FORMAT_ID) throw new ProjectFormatError('not-a-project');
 
   const fileVersion = parseSemVer(data.formatVersion);
-  if (!fileVersion) throw new ProjectFormatError('not-a-project', `invalid format version ${String(data.formatVersion)}`);
+  if (!fileVersion)
+    throw new ProjectFormatError('not-a-project', `invalid format version ${String(data.formatVersion)}`);
   const fileVersionText = formatSemVer(fileVersion);
   if (fileVersion.major > current.major) throw new ProjectFormatError('too-recent', fileVersionText);
 
@@ -134,7 +148,8 @@ function normalize(raw: Json, formatVersion: string): Pick<LoadResult, 'project'
     background: str(s.background, DEFAULT_SETTINGS.background) || DEFAULT_SETTINGS.background,
     rowSpacing: clamp(num(s.rowSpacing) ?? DEFAULT_SETTINGS.rowSpacing, 0, 200),
     showLabels: bool(s.showLabels, DEFAULT_SETTINGS.showLabels),
-    labelOrientation: oneOf(s.labelOrientation, ['horizontal', 'vertical'] as const) ?? DEFAULT_SETTINGS.labelOrientation,
+    labelOrientation:
+      oneOf(s.labelOrientation, ['horizontal', 'vertical'] as const) ?? DEFAULT_SETTINGS.labelOrientation,
     labelHeight: clamp(num(s.labelHeight) ?? DEFAULT_SETTINGS.labelHeight, 8, 120),
     fillEmptyWithBlanks: bool(s.fillEmptyWithBlanks, DEFAULT_SETTINGS.fillEmptyWithBlanks),
     showRowNames: bool(s.showRowNames, DEFAULT_SETTINGS.showRowNames),
@@ -168,7 +183,8 @@ function normalize(raw: Json, formatVersion: string): Pick<LoadResult, 'project'
         continue;
       }
       let width = num(rd.width) ?? 1;
-      if (!isOnStep(width) || width < STEP || width > MAX_DEVICE_WIDTH) width = clamp(Math.round(width), 1, MAX_DEVICE_WIDTH);
+      if (!isOnStep(width) || width < STEP || width > MAX_DEVICE_WIDTH)
+        width = clamp(Math.round(width), 1, MAX_DEVICE_WIDTH);
       const device: Device = {
         id: freshId(rd.id),
         kind: rd.kind as DeviceKind,
@@ -180,10 +196,16 @@ function normalize(raw: Json, formatVersion: string): Pick<LoadResult, 'project'
       if (!canPlace(row, device.position, device.width)) {
         const pos = findFreeSlot(row, device.width, device.position);
         if (pos < 0) {
-          warnings.push({ key: 'load.deviceDropped', params: { row: row.name, device: device.props.label ?? device.kind } });
+          warnings.push({
+            key: 'load.deviceDropped',
+            params: { row: row.name, device: device.props.label ?? device.kind },
+          });
           continue;
         }
-        warnings.push({ key: 'load.deviceMoved', params: { row: row.name, device: device.props.label ?? device.kind } });
+        warnings.push({
+          key: 'load.deviceMoved',
+          params: { row: row.name, device: device.props.label ?? device.kind },
+        });
         device.position = pos;
       }
       row.devices.push(device);

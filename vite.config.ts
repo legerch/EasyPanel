@@ -10,6 +10,7 @@ export default defineConfig({
   base: './',
   // Application semantic version, single source of truth: package.json.
   define: { __APP_VERSION__: JSON.stringify(pkg.version) },
-  build: { target: 'es2022', sourcemap: true },
+  // No explicit target: Vite's default, "baseline-widely-available", follows Vite upgrades.
+  build: { sourcemap: true },
   test: { environment: 'node', include: ['tests/**/*.test.ts'] },
 });

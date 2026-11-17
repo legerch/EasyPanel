@@ -58,7 +58,8 @@ export class Store {
     draft.meta.updatedAt = new Date().toISOString();
 
     const now = Date.now();
-    const merge = coalesceKey !== undefined && this.lastCoalesce?.key === coalesceKey && now - this.lastCoalesce.time < COALESCE_MS;
+    const merge =
+      coalesceKey !== undefined && this.lastCoalesce?.key === coalesceKey && now - this.lastCoalesce.time < COALESCE_MS;
     if (!merge) {
       this.past.push(this._project);
       if (this.past.length > HISTORY_LIMIT) this.past.shift();
@@ -85,7 +86,8 @@ export class Store {
 
   select(selection: Selection): void {
     const same =
-      selection.type === this._selection.type && (selection.type === 'none' || (this._selection as { id: string }).id === selection.id);
+      selection.type === this._selection.type &&
+      (selection.type === 'none' || (this._selection as { id: string }).id === selection.id);
     if (same) return;
     this._selection = selection;
     this.lastCoalesce = null;
@@ -126,7 +128,8 @@ export class Store {
   /** Drops the selection if the selected item no longer exists. */
   private validateSelection(): void {
     const s = this._selection;
-    if (s.type === 'device' && !this._project.rows.some((r) => r.devices.some((d) => d.id === s.id))) this._selection = { type: 'none' };
+    if (s.type === 'device' && !this._project.rows.some((r) => r.devices.some((d) => d.id === s.id)))
+      this._selection = { type: 'none' };
     if (s.type === 'row' && !this._project.rows.some((r) => r.id === s.id)) this._selection = { type: 'none' };
   }
 }

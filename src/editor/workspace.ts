@@ -69,6 +69,8 @@ interface DragState {
 
 export class Workspace {
   readonly scroller: HTMLElement;
+  private readonly store: Store;
+  private readonly cb: WorkspaceCallbacks;
   private readonly canvas: HTMLElement;
   private svg: SVGSVGElement | null = null;
   private layout: PanelLayout | null = null;
@@ -76,11 +78,9 @@ export class Workspace {
   private autoScrollFrame = 0;
   private _zoom = 1;
 
-  constructor(
-    host: HTMLElement,
-    private readonly store: Store,
-    private readonly cb: WorkspaceCallbacks,
-  ) {
+  constructor(host: HTMLElement, store: Store, cb: WorkspaceCallbacks) {
+    this.store = store;
+    this.cb = cb;
     this.scroller = host;
     this.canvas = document.createElement('div');
     this.canvas.className = 'canvas';
@@ -240,7 +240,8 @@ export class Workspace {
       if (Math.hypot(e.clientX - d.startX, e.clientY - d.startY) < DRAG_THRESHOLD) return;
       d.started = true;
       document.body.classList.add('dragging');
-      if (d.deviceId) this.canvas.querySelector(`[data-device-id="${CSS.escape(d.deviceId)}"]`)?.classList.add('drag-source');
+      if (d.deviceId)
+        this.canvas.querySelector(`[data-device-id="${CSS.escape(d.deviceId)}"]`)?.classList.add('drag-source');
       this.autoScrollFrame = requestAnimationFrame(this.autoScroll);
     }
     this.updateDrag();
@@ -354,7 +355,13 @@ export class Workspace {
     const g = this.layout.rows[index];
     const { panel } = this.layout;
     const tolerance = 30;
-    if (p.x < panel.x - tolerance || p.x > panel.x + panel.w + tolerance || p.y < panel.y - tolerance || p.y > panel.y + panel.h + tolerance) return null;
+    if (
+      p.x < panel.x - tolerance ||
+      p.x > panel.x + panel.w + tolerance ||
+      p.y < panel.y - tolerance ||
+      p.y > panel.y + panel.h + tolerance
+    )
+      return null;
 
     const row = this.store.project.rows[index];
     const width = d.spec.width;
@@ -369,7 +376,8 @@ export class Workspace {
     // only valid option nearby (or the device itself is half-module wide).
     const whole = clamp(Math.round(rel));
     const half = clamp(roundToStep(rel));
-    const valid = (pos: number) => (insert ? planInsert(row, pos, width, d.deviceId) !== null : canPlace(row, pos, width, d.deviceId));
+    const valid = (pos: number) =>
+      insert ? planInsert(row, pos, width, d.deviceId) !== null : canPlace(row, pos, width, d.deviceId);
     const position = valid(whole) && (Number.isInteger(width) || !valid(half)) ? whole : valid(half) ? half : whole;
 
     let failure: DropFailure | null = null;
@@ -398,7 +406,9 @@ export class Workspace {
     const x = g.x + target.position * MODULE_MM;
     const w = d.spec.width * MODULE_MM;
     const state = target.failure ? 'invalid' : target.insert ? 'insert' : 'valid';
-    const marker = target.insert ? `<line class="insert-marker" x1="${n(x - 0.6)}" y1="${n(g.deviceY - 4)}" x2="${n(x - 0.6)}" y2="${n(g.deviceY + DEVICE_H + 4)}"/>` : '';
+    const marker = target.insert
+      ? `<line class="insert-marker" x1="${n(x - 0.6)}" y1="${n(g.deviceY - 4)}" x2="${n(x - 0.6)}" y2="${n(g.deviceY + DEVICE_H + 4)}"/>`
+      : '';
     const html =
       `<g class="ghost ghost-${state}" font-family="${FONT_FAMILY}" pointer-events="none">` +
       `<g transform="translate(${n(x)} ${n(g.deviceY)})" opacity="0.8">${drawDevice(d.spec, this.store.project.settings.deviceStyle)}</g>` +
@@ -410,7 +420,11 @@ export class Workspace {
     const last = target.position + d.spec.width;
     const range = d.spec.width <= 1 ? fmt(first) : `${fmt(first)}–${fmt(last)}`;
     const where = t('drag.where', { row: row.name, range });
-    this.cb.status(target.failure ? `${where} — ${t(`error.${target.failure}`)}` : `${where}${target.insert ? ` — ${t('drag.insert')}` : ` — ${t('drag.shiftHint')}`}`);
+    this.cb.status(
+      target.failure
+        ? `${where} — ${t(`error.${target.failure}`)}`
+        : `${where}${target.insert ? ` — ${t('drag.insert')}` : ` — ${t('drag.shiftHint')}`}`,
+    );
   }
 
   /** HTML ghost following the pointer while it is outside the panel (e.g. still over the library). */
@@ -428,7 +442,9 @@ export class Workspace {
 
   /** Scrolls so the given device is visible. */
   reveal(deviceId: string): void {
-    this.canvas.querySelector(`[data-device-id="${CSS.escape(deviceId)}"]`)?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    this.canvas
+      .querySelector(`[data-device-id="${CSS.escape(deviceId)}"]`)
+      ?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   }
 }
 

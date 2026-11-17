@@ -6,7 +6,11 @@ import { FORMAT_VERSION } from '../src/model/types';
 import { APP_VERSION } from '../src/version';
 import pkg from '../package.json';
 
-const minimal = (formatVersion: unknown) => ({ format: 'easypanel', formatVersion, rows: [{ name: 'R1', modules: 13, devices: [] }] });
+const minimal = (formatVersion: unknown) => ({
+  format: 'easypanel',
+  formatVersion,
+  rows: [{ name: 'R1', modules: 13, devices: [] }],
+});
 
 function errorOf(fn: () => unknown): ProjectFormatError | null {
   try {
@@ -82,8 +86,14 @@ describe('format versioning', () => {
   it('chains major migrations and reports them', () => {
     const calls: number[] = [];
     const migrations = {
-      1: (p: Record<string, unknown>) => (calls.push(1), { ...p, formatVersion: '2.0.0', lines: p.rows, rows: undefined }),
-      2: (p: Record<string, unknown>) => (calls.push(2), { ...p, formatVersion: '3.0.0', rows: p.lines, notes: 'migrated' }),
+      1: (p: Record<string, unknown>) => (
+        calls.push(1),
+        { ...p, formatVersion: '2.0.0', lines: p.rows, rows: undefined }
+      ),
+      2: (p: Record<string, unknown>) => (
+        calls.push(2),
+        { ...p, formatVersion: '3.0.0', rows: p.lines, notes: 'migrated' }
+      ),
     };
     const r = loadProject(minimal('1.2.0'), { formatVersion: '3.1.0', migrations });
     expect(calls).toEqual([1, 2]);
@@ -96,6 +106,8 @@ describe('format versioning', () => {
   });
 
   it('refuses when a migration step is missing', () => {
-    expect(errorOf(() => loadProject(minimal('1.0.0'), { formatVersion: '2.0.0', migrations: {} }))?.code).toBe('not-a-project');
+    expect(errorOf(() => loadProject(minimal('1.0.0'), { formatVersion: '2.0.0', migrations: {} }))?.code).toBe(
+      'not-a-project',
+    );
   });
 });

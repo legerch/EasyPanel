@@ -18,7 +18,10 @@ export const LANGS: Array<{ id: Lang; label: string }> = [
 let current: Lang = 'en';
 
 export function detectLang(preferred?: string): Lang {
-  const candidates = [preferred, ...(typeof navigator !== 'undefined' ? navigator.languages ?? [navigator.language] : [])];
+  const candidates = [
+    preferred,
+    ...(typeof navigator !== 'undefined' ? (navigator.languages ?? [navigator.language]) : []),
+  ];
   for (const c of candidates) {
     const base = c?.slice(0, 2).toLowerCase();
     if (base && base in DICTS) return base as Lang;
@@ -51,5 +54,8 @@ export function formatNumber(v: number): string {
 export function formatDate(iso: string, withTime = false): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '';
-  return new Intl.DateTimeFormat(current, withTime ? { dateStyle: 'medium', timeStyle: 'short' } : { dateStyle: 'long' }).format(d);
+  return new Intl.DateTimeFormat(
+    current,
+    withTime ? { dateStyle: 'medium', timeStyle: 'short' } : { dateStyle: 'long' },
+  ).format(d);
 }
