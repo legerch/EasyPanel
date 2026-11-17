@@ -1,0 +1,102 @@
+# Publishes a release when `npm run release` pushes a tag (v*):
+#   1. checks that the tag matches package.json, then typechecks, tests and builds;
+#   2. creates the GitHub release with the CHANGELOG section as notes and the built app as a zip;
+#   3. deploys the same tag to GitHub Pages (deploy-pages.yml).
+#
+# Manual run (Actions tab > "Release" > Run workflow): dry run by default. It does everything
+# except creating the release and deploying, and shows the release notes in the run summary.
+# Run it on a tag with the box unticked to retry a failed publication.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Build and preview only, do not publish
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the GitHub release
+    env:
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+    steps:
+      - name: Refuse to publish anything but a release tag
+        if: ${{ env.DRY_RUN != 'true' && !startsWith(github.ref, 'refs/tags/v') }}
+        run: |
+          echo "::error::Only release tags (v*) can be published, not '${{ github.ref }}'. Run as a dry run, or pick a tag in 'Use workflow from'."
+          exit 1
+
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: package.json
+          cache: npm
+
+      - name: Read the version
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if [[ "$GITHUB_REF" == refs/tags/* && "$GITHUB_REF_NAME" != "v$VERSION" ]]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match package.json version $VERSION."
+            exit 1
+          fi
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm test
+      - run: npm run build
+
+      - name: Package the app
+        run: |
+          ZIP="easypanel-${{ steps.version.outputs.version }}.zip"
+          (cd dist && zip -qr "../$ZIP" .)
+          echo "ZIP=$ZIP" >> "$GITHUB_ENV"
+
+      - name: Prepare the release notes
+        run: |
+          FALLBACK=$([[ "$DRY_RUN" == "true" ]] && echo "--or-unreleased" || true)
+          node scripts/release-notes.ts "${{ steps.version.outputs.version }}" $FALLBACK > release-notes.md
+          {
+            echo "## EasyPanel ${{ steps.version.outputs.version }}$([[ "$DRY_RUN" == "true" ]] && echo ' (dry run)')"
+            echo
+            cat release-notes.md
+            echo
+            echo "Asset: \`$ZIP\` ($(du -h "$ZIP" | cut -f1))"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Create the GitHub release
+        if: ${{ env.DRY_RUN != 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" "$ZIP" \
+            --verify-tag \
+            --title "EasyPanel ${{ steps.version.outputs.version }}" \
+            --notes-file release-notes.md
+
+  deploy:
+    needs: release
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy-pages.yml
+    with:
+      dry_run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}

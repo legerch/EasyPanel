@@ -6,9 +6,7 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The project file format is versioned separately (see "Versioning" in the README); format
 changes are always mentioned here.
 
-## [1.0.0] - Unreleased
-
-First version, still in development.
+## [Unreleased]
 
 ### Added
 
@@ -17,12 +15,12 @@ First version, still in development.
 - Component library: RCD, breakers, RCBO, main switch, fuse holder, surge protector,
   contactor, impulse relay, timer, indicator, outlet, energy meter, blank and generic devices.
 - Two device styles, selectable in the panel settings (the library previews follow it):
-  - *Modern* (default for new projects): realistic fronts modelled on current hardware —
+  - _Modern_ (default for new projects): realistic fronts modelled on current hardware —
     breakers with a large coloured handle, rating badge and contact-status window; RCDs
     with an information panel, test button and type badge; contactors with an
     OFF/AUTO/ON selector and coil/contact symbols; redrawn impulse relay, timer, surge
     protector, fuse carrier, outlet, meter and indicator.
-  - *Classic*.
+  - _Classic_.
 - "Handle / accent colour" device property (e.g. a light-green handle on white breakers).
 - Day/night contactor preset showing its rating ("20A") with "Jour/Nuit" as secondary text.
 - Drag and drop with snapping, collision feedback, Shift-insert and "pack left".
