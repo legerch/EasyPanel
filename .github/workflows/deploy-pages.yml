@@ -1,0 +1,75 @@
+# Builds EasyPanel and publishes it on GitHub Pages.
+#
+# Only release tags (v*) are ever published, so the site always matches a released version.
+#
+# - Manual run (Actions tab > "Deploy to GitHub Pages" > Run workflow): dry run by default,
+#   which checks, tests and builds the site without publishing it. Choosing a tag in "Use
+#   workflow from" and unticking the box redeploys that release; on a branch it fails.
+# - Reusable: the release workflow calls it with `dry_run: false` once a release is tagged.
+#
+# One-time setup:
+#   - Settings > Pages > Build and deployment > Source: "GitHub Actions".
+#   - Settings > Environments > github-pages > Deployment branches and tags: allow only the
+#     tag pattern "v*" (GitHub only allows the default branch until this is changed).
+name: Deploy to GitHub Pages
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Build only, do not publish
+        type: boolean
+        default: true
+  workflow_call:
+    inputs:
+      dry_run:
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+# One deployment at a time; a running deployment is never cancelled halfway.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Refuse to publish anything but a release tag
+        if: ${{ !inputs.dry_run && !startsWith(github.ref, 'refs/tags/v') }}
+        run: |
+          echo "::error::Only release tags (v*) can be published, not '${{ github.ref }}'. Run as a dry run, or pick a tag in 'Use workflow from'."
+          exit 1
+
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    if: ${{ !inputs.dry_run && startsWith(github.ref, 'refs/tags/v') }}
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
